@@ -1,0 +1,27 @@
+.title-credits-grid {
+  @apply grid-cols-1;
+}
+
+@screen md {
+  .title-credits-grid {
+    @apply grid-cols-2;
+  }
+}
+
+@screen lg {
+  .title-credits-grid {
+    @apply grid-cols-3;
+  }
+}
+
+@container (min-width: 500px) {
+  .title-credits-grid {
+    @apply grid-cols-2;
+  }
+}
+
+@container (min-width: 900px) {
+  .title-credits-grid {
+    @apply grid-cols-3;
+  }
+}

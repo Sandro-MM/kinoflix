@@ -1,0 +1,97 @@
+[
+  {
+    "slug": "people",
+    "name": "Trending Actors",
+    "presetDescription": "Lists all people in the database, sorted by popularity",
+    "internal": true,
+    "config": {
+      "seoTitle": "Popular People - {{site_name}}",
+      "seoDescription": "The Movie Database ({{site_name}}) is a popular database for movies, TV shows and celebrities.",
+      "contentType": "listAll",
+      "contentOrder": "popularity:desc",
+      "nestedLayout": "carousel",
+      "contentModel": "person",
+      "layout": "list",
+      "presetId": "listAllPeople"
+    }
+  },
+  {
+    "slug": "movies",
+    "name": "Browse Movies",
+    "presetDescription": "Lists all movies in the database, sorted by popularity",
+    "internal": true,
+    "config": {
+      "seoTitle": "Browse - {{site_name}}",
+      "seoDescription": "Browse movies and series based on {{site_name}}",
+      "contentType": "listAll",
+      "contentOrder": "popularity:desc",
+      "nestedLayout": "carousel",
+      "contentModel": "movie",
+      "layout": "grid",
+      "presetId": "listAllMovies"
+    }
+  },
+  {
+    "slug": "series",
+    "name": "Browse series",
+    "internal": true,
+    "presetDescription": "Lists all series in the database, sorted by popularity",
+    "config": {
+      "contentType": "listAll",
+      "contentOrder": "popularity:desc",
+      "nestedLayout": "carousel",
+      "contentModel": "series",
+      "layout": "grid",
+      "presetId": "listAllSeries"
+    }
+  },
+  {
+    "slug": "genre",
+    "name": "{{channel.restriction.display_name}} movies and series",
+    "presetDescription": "Lists all movies and series of a particular genre",
+    "internal": true,
+    "config": {
+      "contentType": "listAll",
+      "contentOrder": "popularity:desc",
+      "nestedLayout": "carousel",
+      "contentModel": "title",
+      "layout": "grid",
+      "connectToGenreViaUrl": true,
+      "restriction": "genre",
+      "restrictionModelId": "urlParam",
+      "presetId": "listAllForGenre"
+    }
+  },
+  {
+    "slug": "keyword",
+    "name": "Titles with “{{channel.restriction.display_name}}“ keyword",
+    "presetDescription": "Lists all movies and series that have a particular keyword",
+    "internal": true,
+    "config": {
+      "contentType": "listAll",
+      "contentOrder": "popularity:desc",
+      "nestedLayout": "carousel",
+      "contentModel": "title",
+      "layout": "grid",
+      "restriction": "keyword",
+      "restrictionModelId": "urlParam",
+      "presetId": "listAllForKeyword"
+    }
+  },
+  {
+    "slug": "production-countries",
+    "name": "Titles produced in {{channel.restriction.display_name}}",
+    "presetDescription": "Lists all movies and series produced in a particular country",
+    "internal": true,
+    "config": {
+      "contentType": "listAll",
+      "contentOrder": "popularity:desc",
+      "nestedLayout": "carousel",
+      "contentModel": "title",
+      "layout": "grid",
+      "restriction": "productionCountry",
+      "restrictionModelId": "urlParam",
+      "presetId": "listAllForCountry"
+    }
+  }
+]

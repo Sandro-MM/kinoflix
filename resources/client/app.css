@@ -1,0 +1,37 @@
+@import '../../common/foundation/resources/client/core/common.css';
+@import 'channels/content-grid/content-grid-landscape.css';
+@import 'channels/content-grid/content-grid-portrait.css';
+@import "titles/pages/title-page/title-credits-grid/title-credits-grid.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.content-carousel {
+  grid-auto-columns: calc(
+    (100% - (var(--nVisibleItems, 1) - 1) * 24px) / var(--nVisibleItems, 1)
+  );
+}
+
+.landing-container {
+  @apply px-24 mx-auto relative;
+}
+
+@media screen and (min-width: 768px) {
+  .landing-container {
+    max-width: 750px;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .landing-container {
+    max-width: 970px;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .landing-container {
+    max-width: 1170px;
+  }
+}
+

@@ -1,0 +1,160 @@
+[
+  {
+    "slug": "homepage",
+    "name": "Homepage",
+    "presetDescription": "The homepage of the site.",
+    "internal": true,
+    "config": {
+      "seoTitle": "{{site_name}} - Movies, TV and Celebrities",
+      "seoDescription": "The Movie Database ({{site_name}}) is a popular database for movies, TV shows and celebrities.",
+      "contentType": "manual",
+      "contentOrder": "channelables.order:asc",
+      "carouselWhenNested": true,
+      "contentModel": "channel",
+      "autoUpdateProvider": "local",
+      "layout": "list",
+      "nestedLayout": "list",
+      "connectToGenreViaUrl": false,
+      "hideTitle": true,
+      "lockSlug": true,
+      "presetId": "defaultHomepage"
+    },
+    "nestedChannels": [
+      "trending-movies",
+      "now-playing",
+      "trending-tv",
+      "releasing-soon",
+      "latest-news",
+      "airing-today",
+      "top-rated-movies",
+      "people"
+    ]
+  },
+  {
+    "slug": "now-playing",
+    "name": "Now playing",
+    "description": "Movies that are currently playing in theaters.",
+    "presetDescription": "Periodically imports movies that are currently playing in theaters from themoviedb",
+    "config": {
+      "contentType": "autoUpdate",
+      "contentOrder": "popularity:desc",
+      "carouselWhenNested": true,
+      "contentModel": "movie",
+      "autoUpdateProvider": "tmdb",
+      "layout": "grid",
+      "nestedLayout": "carousel",
+      "autoUpdateMethod": "nowPlaying",
+      "connectToGenreViaUrl": false,
+      "presetId": "defaultNowPlayingMovies"
+    }
+  },
+  {
+    "slug": "trending-tv",
+    "name": "Trending TV shows",
+    "description": "Currently trending TV shows.",
+    "presetDescription": "Periodically imports trending TV shows from themoviedb",
+    "config": {
+      "contentType": "autoUpdate",
+      "contentOrder": "popularity:desc",
+      "carouselWhenNested": true,
+      "contentModel": "series",
+      "autoUpdateProvider": "tmdb",
+      "layout": "grid",
+      "nestedLayout": "carousel",
+      "autoUpdateMethod": "mostPopular",
+      "connectToGenreViaUrl": false,
+      "tmdb_language": "en",
+      "presetId": "defaultTrendingTv"
+    }
+  },
+  {
+    "slug": "releasing-soon",
+    "name": "Releasing soon",
+    "description": "Movies that will soon be playing in theaters",
+    "presetDescription": "Periodically imports movies that will soon be playing in theaters from themoviedb",
+    "config": {
+      "contentType": "autoUpdate",
+      "contentOrder": "popularity:desc",
+      "carouselWhenNested": true,
+      "contentModel": "movie",
+      "autoUpdateProvider": "tmdb",
+      "layout": "grid",
+      "nestedLayout": "landscapeCarousel",
+      "autoUpdateMethod": "upcoming",
+      "connectToGenreViaUrl": false,
+      "presetId": "defaultUpcomingMovies"
+    }
+  },
+  {
+    "slug": "trending-movies",
+    "name": "Trending movies",
+    "presetDescription": "Periodically imports trending movies from themoviedb",
+    "config": {
+      "contentType": "autoUpdate",
+      "contentOrder": "popularity:desc",
+      "carouselWhenNested": true,
+      "contentModel": "movie",
+      "autoUpdateProvider": "tmdb",
+      "layout": "grid",
+      "nestedLayout": "slider",
+      "autoUpdateMethod": "mostPopular",
+      "connectToGenreViaUrl": false,
+      "hideTitle": true,
+      "presetId": "defaultTrendingMovies"
+    }
+  },
+  {
+    "slug": "airing-today",
+    "name": "Airing today",
+    "presetDescription": "Periodically imports TV shows that are airing today from themoviedb",
+    "config": {
+      "contentType": "autoUpdate",
+      "contentOrder": "popularity:desc",
+      "carouselWhenNested": true,
+      "contentModel": "series",
+      "autoUpdateProvider": "tmdb",
+      "layout": "grid",
+      "nestedLayout": "carousel",
+      "autoUpdateMethod": "airingToday",
+      "connectToGenreViaUrl": false,
+      "presetId": "defaultAiringToday"
+    }
+  },
+  {
+    "slug": "top-rated-movies",
+    "name": "Top rated movies",
+    "presetDescription": "Periodically imports top rated movies from themoviedb",
+    "config": {
+      "contentType": "autoUpdate",
+      "contentOrder": "popularity:desc",
+      "carouselWhenNested": true,
+      "contentModel": "movie",
+      "autoUpdateProvider": "tmdb",
+      "layout": "grid",
+      "nestedLayout": "carousel",
+      "autoUpdateMethod": "topRated",
+      "connectToGenreViaUrl": false,
+      "presetId": "defaultTopRatedMovies"
+    }
+  },
+  {
+    "slug": "latest-news",
+    "name": "Latest news",
+    "presetDescription": "Lists all news articles available in the database",
+    "internal": true,
+    "config": {
+      "seoTitle": "Latest news - {{site_name}}",
+      "seoDescription": "The Movie Database ({{site_name}}) is a popular database for movies, TV shows and celebrities.",
+      "contentType": "listAll",
+      "contentOrder": "created_at:desc",
+      "carouselWhenNested": true,
+      "contentModel": "newsArticle",
+      "autoUpdateProvider": "local",
+      "layout": "list",
+      "nestedLayout": "landscapeCarousel",
+      "connectToGenreViaUrl": false,
+      "autoUpdateMethod": null,
+      "presetId": "defaultNews"
+    }
+  }
+]

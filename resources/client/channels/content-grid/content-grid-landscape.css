@@ -1,0 +1,27 @@
+.content-grid-landscape {
+  --nVisibleItems: 1;
+}
+
+@media (min-width: 280px) {
+  .content-grid-landscape {
+    --nVisibleItems: 2;
+  }
+}
+
+@media (min-width: 786px) {
+  .content-grid-landscape {
+    --nVisibleItems: 3;
+  }
+}
+
+@container (min-width: 600px) {
+  .content-grid-landscape {
+    --nVisibleItems: 3;
+  }
+}
+
+@container (min-width: 1200px) {
+  .content-grid-landscape {
+    --nVisibleItems: 4;
+  }
+}
