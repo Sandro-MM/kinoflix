@@ -109,7 +109,7 @@ function Slide({item, index}: SlideProps) {
         {/*  srcSize="md"*/}
         {/*  className="z-10 shadow-md max-md:hidden"*/}
         {/*/>*/}
-        <div className="z-10 text-lg md:max-w-620 absolute bottom-[250px] left-[70px]">
+        <div className="z-10 text-lg md:max-w-620 absolute md:bottom-[250px] bottom-16 left-16  md:left-[70px]">
 
           <TitleRating score={item.rating} />
 
@@ -178,7 +178,7 @@ function UpNext({titles, activePage}: UpNextProps) {
         {/*<div className="mb-12 text-lg font-semibold">*/}
         {/*  <Trans message="Up next" />*/}
         {/*</div>*/}
-        <div className="flex flex-row gap-24 relative">
+        <div className="flex flex-row gap-16 relative">
           {items.map(item => (
             <m.div
               key={item.id}
