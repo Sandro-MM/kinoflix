@@ -53,8 +53,8 @@ export function ChannelContentSlider({
                 <Slide key={item.id} item={item} index={index} />
               ))}
             </div>
-            <div className="absolute top-[50%] z-20 w-full">
-              <div className="absolute left-8 hidden md:left-14 md:block">
+            <div className="absolute md:top-[50%] top-10 z-20 w-full">
+              <div className="absolute left-8 hidden md:left-6 md:block">
                 <IconButton
                   variant="outline"
                   size="lg"
