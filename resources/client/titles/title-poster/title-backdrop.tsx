@@ -62,7 +62,7 @@ export function TitleBackdrop({
   const imageClassName = clsx(
     className,
     size,
-    'aspect-video bg-fg-base/4 object-cover',
+    'aspect-video bg-fg-base/4 object-center object-cover',
     !src ? 'flex items-center justify-center' : 'block',
   );
 

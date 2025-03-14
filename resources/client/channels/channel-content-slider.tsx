@@ -1,5 +1,5 @@
 import {ChannelContentProps} from '@app/channels/channel-content';
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import {useCarousel} from '@app/channels/carousel/use-carousel';
 import {Title} from '@app/titles/models/title';
 import {TitleRating} from '@app/reviews/title-rating';
@@ -41,42 +41,47 @@ export function ChannelContentSlider({
         isNested={isNested}
         margin="mb-18"
       />
-      <div className="gap-24 md:flex">
-        <div className="relative flex-auto">
-          <div
-            ref={scrollContainerRef}
-            className="hidden-scrollbar flex h-full select-none snap-x snap-mandatory snap-always items-center overflow-x-auto"
-          >
-            {pagination?.data.map((item, index) => (
-              <Slide key={item.id} item={item} index={index} />
-            ))}
-          </div>
-          <div className="absolute top-10 z-20 w-full md:top-[170px]">
-            <div className="absolute left-8 hidden md:left-14 md:block">
-              <IconButton
-                variant="outline"
-                size="lg"
-                color="white"
-                disabled={!canScrollBackward}
-                onClick={() => scrollToPreviousPage()}
-              >
-                <ChevronLeftIcon />
-              </IconButton>
+      <div className={'w-[100vw] md:h-[100dvh] h-[374px]'}>
+
+        <div className="gap-24 md:flex max-md:w-[100vw] w-[calc(100vw-30px)] h-[100dvh] absolute top-0 max-md:left-0 left-[30px] ">
+          <div className="relative flex-auto">
+            <div
+              ref={scrollContainerRef}
+              className="hidden-scrollbar flex h-full select-none snap-x snap-mandatory snap-always items-center overflow-x-auto"
+            >
+              {pagination?.data.map((item, index) => (
+                <Slide key={item.id} item={item} index={index} />
+              ))}
             </div>
-            <div className="absolute right-8 hidden md:right-14 md:block">
-              <IconButton
-                variant="outline"
-                size="lg"
-                color="white"
-                disabled={!canScrollForward}
-                onClick={() => scrollToNextPage()}
-              >
-                <ChevronRightIcon />
-              </IconButton>
+            <div className="absolute top-[50%] z-20 w-full">
+              <div className="absolute left-8 hidden md:left-14 md:block">
+                <IconButton
+                  variant="outline"
+                  size="lg"
+                  color="white"
+                  disabled={!canScrollBackward}
+                  onClick={() => scrollToPreviousPage()}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+              </div>
+              <div className="absolute right-8 hidden md:right-14 md:block">
+                <IconButton
+                  variant="outline"
+                  size="lg"
+                  color="white"
+                  disabled={!canScrollForward}
+                  onClick={() => scrollToNextPage()}
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+              </div>
             </div>
           </div>
+          <UpNext titles={pagination?.data ?? []} activePage={activePage} />
         </div>
-        <UpNext titles={pagination?.data ?? []} activePage={activePage} />
+
+
       </div>
     </Fragment>
   );
@@ -90,6 +95,7 @@ function Slide({item, index}: SlideProps) {
   return (
     <div className="relative h-full w-full flex-shrink-0 snap-start snap-normal overflow-hidden rounded">
       <TitleBackdrop
+        size={'md:h-[100vh] md:w-[calc(100vw-30px)]'}
         title={item}
         lazy={index > 0}
         className="min-h-240 md:min-h-0"
@@ -97,20 +103,24 @@ function Slide({item, index}: SlideProps) {
       />
       <div className="absolute inset-0 isolate flex h-full w-full items-center justify-start gap-24 rounded p-30 text-white md:items-end">
         <div className="absolute left-0 h-full w-full bg-gradient-to-b from-black/40 max-md:top-0 md:bottom-0 md:h-3/4 md:bg-gradient-to-t md:from-black/100" />
-        <TitlePoster
-          title={item}
-          size="max-h-320"
-          srcSize="md"
-          className="z-10 shadow-md max-md:hidden"
-        />
-        <div className="z-10 text-lg md:max-w-620">
+        {/*<TitlePoster*/}
+        {/*  title={item}*/}
+        {/*  size="max-h-320"*/}
+        {/*  srcSize="md"*/}
+        {/*  className="z-10 shadow-md max-md:hidden"*/}
+        {/*/>*/}
+        <div className="z-10 text-lg md:max-w-620 absolute bottom-[250px] left-[70px]">
+
           <TitleRating score={item.rating} />
+
           <div className="my-8 text-2xl md:text-5xl">
             <TitleLink title={item} />
           </div>
+
           {item.description && (
             <p className="max-md:hidden">{item.description}</p>
           )}
+
           {item.primary_video && (
             <Button
               variant="flat"
@@ -139,9 +149,24 @@ interface UpNextProps {
   activePage: number;
 }
 function UpNext({titles, activePage}: UpNextProps) {
+  const [itemsVisible, setItemsVisible] = useState(getItemsVisible());
+
+  useEffect(() => {
+    function handleResize() {
+      setItemsVisible(getItemsVisible());
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  function getItemsVisible() {
+    return window.innerWidth / 300;
+  }
+
   const itemCount = titles.length;
   const start = activePage + 1;
-  const end = start + 3;
+  const end = start + itemsVisible;
   const items = titles.slice(start, end);
   if (end > itemCount) {
     items.push(...titles.slice(0, end - itemCount));
@@ -149,15 +174,15 @@ function UpNext({titles, activePage}: UpNextProps) {
 
   return (
     <AnimatePresence initial={false} mode="wait">
-      <div className="w-1/4 max-w-200 flex-shrink-0 max-md:hidden">
-        <div className="mb-12 text-lg font-semibold">
-          <Trans message="Up next" />
-        </div>
-        <div className="flex flex-col gap-24">
+      <div className=" w-full flex-shrink-0 max-md:hidden absolute bottom-0 px-16">
+        {/*<div className="mb-12 text-lg font-semibold">*/}
+        {/*  <Trans message="Up next" />*/}
+        {/*</div>*/}
+        <div className="flex flex-row gap-24 relative">
           {items.map(item => (
             <m.div
               key={item.id}
-              className="relative flex-auto"
+              className="relative  flex-auto"
               initial={{opacity: 0}}
               animate={{opacity: 1}}
               exit={{opacity: 0}}
@@ -166,16 +191,18 @@ function UpNext({titles, activePage}: UpNextProps) {
               <TitleBackdrop
                 title={item}
                 className="mb-6 rounded"
-                size="w-full"
+                size="w-full max-h-[220px]"
                 srcSize="md"
                 wrapWithLink
                 showPlayButton
               />
-              <div className="mb-2 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm">
-                <TitleLink title={item} className="text-base font-medium" />
-              </div>
-              <div>
-                <TitleRating score={item.rating} className="text-sm" />
+              <div className={'absolute bottom-12 left-12'}>
+                <div className="mb-2 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm">
+                  <TitleLink title={item} className="text-base font-medium" />
+                </div>
+                <div>
+                  <TitleRating score={item.rating} className="text-sm" />
+                </div>
               </div>
             </m.div>
           ))}
