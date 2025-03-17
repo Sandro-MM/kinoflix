@@ -16,6 +16,7 @@ interface AddFilterButtonProps {
   disabled?: boolean;
   size?: ButtonProps['size'];
   className?: string;
+  modalType: 'component' | 'modal'
 }
 export function AddFilterButton({
   filters,
@@ -25,6 +26,7 @@ export function AddFilterButton({
   size = 'sm',
   disabled,
   className,
+  modalType = 'component',
 }: AddFilterButtonProps) {
   const isMobile = useIsMobileMediaQuery();
 
@@ -55,7 +57,7 @@ export function AddFilterButton({
 
   return (
     <div className={'w-full'}>
-      <DialogTrigger type="component" alwaysVisible onOpenChange={()=> true} triggerOnContextMenu isOpen={true} defaultIsOpen={true} >
+      <DialogTrigger type={modalType} alwaysVisible>
         <AddFilterDialog filters={filters} />
       </DialogTrigger>
     </div>

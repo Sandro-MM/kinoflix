@@ -38,7 +38,7 @@ export function DataTableHeader({
         }}
       />
       {filters && (
-        <AddFilterButton filters={filters} disabled={filtersLoading} />
+        <AddFilterButton modalType={'component'} filters={filters} disabled={filtersLoading} />
       )}
       {actions}
     </HeaderLayout>

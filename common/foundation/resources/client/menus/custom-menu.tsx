@@ -109,7 +109,7 @@ export const CustomMenuItem = forwardRef<HTMLAnchorElement, MenuItemProps>(
       unstyled,
       onlyShowIcon,
       iconClassName,
-      iconSize = 'sm',
+      iconSize = 'md',
       extraContent,
       position = 'relative',
       ...linkProps

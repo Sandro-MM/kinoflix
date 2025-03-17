@@ -134,11 +134,13 @@ export function Navbar(props: NavbarProps) {
       <div className={
         clsx(
           getColorStyle(color, textColor),
-          `w-[40px] hover:w-[150px] hover:${color} ml-[-8px] transition-all duration-300 h-full fixed top-0 left-0 z-[-1] pt-90 max-md:hidden overflow-x-hidden`
+          `w-[54px] hover:w-[150px] hover:${color} ml-[-8px] transition-all duration-300 h-full fixed top-0 left-0 z-[99] pt-1 max-md:hidden overflow-x-hidden`
         )
 
 
       }>
+        12323123
+
         <DesktopMenu position={menuPosition} />
       </div>
     </div>
@@ -151,7 +153,7 @@ interface DesktopMenuProps {
 function DesktopMenu({position}: DesktopMenuProps) {
   return (
     <CustomMenu
-      className="mx-14 text-sm max-md:hidden"
+      className="mx-20 text-sm max-md:hidden"
       itemClassName={isActive =>
         clsx(
           'opacity-90 hover:underline hover:opacity-100',
