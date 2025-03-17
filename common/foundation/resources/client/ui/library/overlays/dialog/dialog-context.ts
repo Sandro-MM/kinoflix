@@ -1,6 +1,6 @@
 import React, {ComponentPropsWithRef, useContext} from 'react';
 
-export type DialogType = 'modal' | 'popover' | 'tray';
+export type DialogType = 'modal' | 'popover' | 'tray' | 'component';
 
 export interface DialogContextValue<T = unknown> {
   labelId: string;

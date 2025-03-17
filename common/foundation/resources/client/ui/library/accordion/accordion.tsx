@@ -186,7 +186,7 @@ export function AccordionItem(props: AccordionItemProps) {
         className={clsx(
           'flex w-full items-center justify-between text-sm',
           disabled && 'pointer-events-none',
-          isFirst && variant === 'default' && 'border-t',
+          isFirst && variant === 'default',
           isExpanded && variant !== 'minimal'
             ? 'border-b'
             : 'border-b border-b-transparent',

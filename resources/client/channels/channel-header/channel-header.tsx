@@ -55,19 +55,19 @@ export function ChannelHeader({
           <Fragment>
             {actions}
             {!isNested && <ChannelSortButton channel={channel} />}
-            {shouldShowFilterButton && (
-              <AddFilterButton
-                icon={<TuneIcon />}
-                color={null}
-                variant="text"
-                disabled={filtersLoading}
-                filters={filters}
-              />
-            )}
             {!isNested && <ChannelLayoutButton channel={channel} />}
           </Fragment>
         }
       />
+      {shouldShowFilterButton && (
+        <AddFilterButton
+          icon={<TuneIcon />}
+          color={null}
+          variant="text"
+          disabled={filtersLoading}
+          filters={filters}
+        />
+      )}
       {shouldShowFilterButton && (
         <div className="mt-14">
           <AnimatePresence initial={false} mode="wait">

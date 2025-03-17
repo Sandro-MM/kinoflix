@@ -54,9 +54,10 @@ export function AddFilterButton({
   );
 
   return (
-    <DialogTrigger type="popover">
-      {isMobile ? mobileButton : desktopButton}
-      <AddFilterDialog filters={filters} />
-    </DialogTrigger>
+    <div className={'w-full'}>
+      <DialogTrigger type="component" alwaysVisible onOpenChange={()=> true} triggerOnContextMenu isOpen={true} defaultIsOpen={true} >
+        <AddFilterDialog filters={filters} />
+      </DialogTrigger>
+    </div>
   );
 }

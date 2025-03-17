@@ -39,7 +39,16 @@ type ModalProps = {
   mobileType?: 'tray' | 'modal' | 'popover';
   placement?: Placement;
 };
-type Props<T = any> = (PopoverProps | ModalProps) & {
+
+type ComponentProps = {
+  type: 'component';
+  mobileType?: 'component';
+  alwaysVisible: boolean;
+  placement?: Placement;
+}
+
+
+type Props<T = any> = (PopoverProps | ModalProps | ComponentProps) & {
   children: [ReactElement, (ctx: DialogContextValue) => void] | ReactNode;
   disableInitialTransition?: boolean;
   onClose?: (
@@ -93,7 +102,10 @@ export function DialogTrigger(props: Props) {
     props.isOpen,
     props.defaultIsOpen,
     props.onOpenChange,
+
   );
+
+
   const [value, setValue] = useControlledState(
     props.value,
     props.defaultValue,
@@ -184,8 +196,8 @@ export function DialogTrigger(props: Props) {
       type,
       labelId,
       descriptionId,
-      isDismissable,
-      close,
+      isDismissable: props.type === 'component' ? false : isDismissable,
+      close : props.type === 'component' ? false : close,
       value,
       initialValue: initialValueRef.current,
       setValue,
@@ -255,25 +267,41 @@ export function DialogTrigger(props: Props) {
 
   const dialogContent = (
     <AnimatePresence initial={!disableInitialTransition}>
-      {isOpen && (
-        <DialogContext.Provider value={contextValue}>
-          <Overlay
-            {...(triggerOnHover ? handleFloatingHover : {})}
-            ref={refs.setFloating}
-            triggerRef={refs.reference}
-            style={floatingStyle}
-            restoreFocus={returnFocusToTrigger}
-            autoFocus={moveFocusToDialog}
-            isOpen={isOpen}
-            onClose={close}
-            isDismissable={isDismissable}
-            isContextMenu={triggerOnContextMenu}
-            placement={props.placement}
-          >
-            {dialog}
-          </Overlay>
-        </DialogContext.Provider>
-      )}
+      {
+        type ==='component' ?
+          <>
+            <DialogContext.Provider value={contextValue}>
+              <div
+                className={'w-full'}
+                style={floatingStyle}
+              >
+                {dialog}
+              </div>
+            </DialogContext.Provider>
+          </>
+          :<>
+            {isOpen && (
+              <DialogContext.Provider value={contextValue}>
+                <Overlay
+                  {...(triggerOnHover ? handleFloatingHover : {})}
+                  ref={refs.setFloating}
+                  triggerRef={refs.reference}
+                  style={floatingStyle}
+                  restoreFocus={returnFocusToTrigger}
+                  autoFocus={moveFocusToDialog}
+                  isOpen={isOpen}
+                  onClose={close}
+                  isDismissable={isDismissable}
+                  isContextMenu={triggerOnContextMenu}
+                  placement={props.placement}
+                >
+                  {dialog}
+                </Overlay>
+              </DialogContext.Provider>
+            )}
+          </>
+      }
+
     </AnimatePresence>
   );
 
@@ -297,7 +325,7 @@ export function DialogTrigger(props: Props) {
             },
           ),
         )}
-      {usePortal
+      {usePortal && props.type !== 'component'
         ? rootEl && createPortal(dialogContent, rootEl)
         : dialogContent}
     </Fragment>

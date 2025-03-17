@@ -52,7 +52,7 @@ export function DialogHeader(props: DialogHeaderProps) {
     <div
       className={clsx(
         className,
-        'flex flex-shrink-0 items-center gap-10',
+        'flex flex-shrink-0  items-center gap-10',
         titleFontWeight,
         showDivider && 'border-b',
         getPadding(props),
@@ -63,7 +63,7 @@ export function DialogHeader(props: DialogHeaderProps) {
       {leftAdornment}
       <h3
         id={labelId}
-        className={clsx(titleTextSize, 'mr-auto leading-5 opacity-90')}
+        className={clsx(titleTextSize, 'm-auto leading-5 opacity-90')}
       >
         {children}
       </h3>

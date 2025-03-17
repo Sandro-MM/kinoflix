@@ -76,8 +76,9 @@ export function AddFilterDialog({filters}: AddFilterDialogProps) {
   );
 
   return (
-    <Dialog className="min-w-[300px]" maxWidth="max-w-400" size="auto">
+    <Dialog className="min-w-[300px] !w-full" size="auto">
       <DialogHeader
+        className={'w-full items-center justify-center'}
         padding="px-14 py-10"
         leftAdornment={clearButton}
         rightAdornment={applyButton}
@@ -145,6 +146,7 @@ function FilterList({
       }}
     >
       <Accordion
+        className={'grid grid-cols-[repeat(auto-fit,minmax(307px,1fr))] gap-4 items-start'}
         mode="multiple"
         expandedValues={expandedFilters}
         onExpandedChange={setExpandedFilters}
