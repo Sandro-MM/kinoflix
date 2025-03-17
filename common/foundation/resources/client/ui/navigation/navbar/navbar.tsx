@@ -99,17 +99,6 @@ export function Navbar(props: NavbarProps) {
           wrapInContainer && 'container mx-auto',
         )}
       >
-        {!hideLogo && (
-          <Logo
-            size="h-full max-h-26 md:max-h-36"
-            className="mr-4 md:mr-24"
-            color={resolveLogoColor({
-              navbarColor: color,
-              logoColor,
-              isDarkMode,
-            })}
-          />
-        )}
         {toggleButton}
         {children}
         <MobileMenu position={menuPosition} />
@@ -134,12 +123,40 @@ export function Navbar(props: NavbarProps) {
       <div className={
         clsx(
           getColorStyle(color, textColor),
-          `w-[54px] hover:w-[150px] hover:${color} ml-[-8px] transition-all duration-300 h-full fixed top-0 left-0 z-[99] pt-1 max-md:hidden overflow-x-hidden`
+          `w-[54px] group  hover:w-[150px] hover:${color} ml-[-8px] transition-all duration-300 h-full fixed top-0 left-0 z-[99] pt-1 max-md:hidden overflow-x-hidden`
         )
 
 
       }>
-        12323123
+
+        <div className={'mx-auto w-full h-50 my-16 pl-16'}>
+          {!hideLogo && (
+            <Logo
+              logoType={'compact'}
+              size="h-30 w-30 max-h-30 md:max-h-30"
+              className="mr-4 md:mr-24 group-hover:hidden"
+              color={resolveLogoColor({
+                navbarColor: color,
+                logoColor,
+                isDarkMode,
+              })}
+            />
+          )}
+
+          {!hideLogo && (
+            <Logo
+              size="h-full max-h-26 md:max-h-36 hidden group-hover:block"
+              className="mr-4 md:mr-24"
+              color={resolveLogoColor({
+                navbarColor: color,
+                logoColor,
+                isDarkMode,
+              })}
+            />
+          )}
+        </div>
+
+
 
         <DesktopMenu position={menuPosition} />
       </div>
