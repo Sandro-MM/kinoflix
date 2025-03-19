@@ -62,8 +62,6 @@ export function ChannelHeader({
       {shouldShowFilterButton && (
         <AddFilterButton
           icon={<TuneIcon />}
-          color={null}
-          variant="text"
           disabled={filtersLoading}
           filters={filters}
         />

@@ -22,8 +22,8 @@ export function AddFilterButton({
   filters,
   icon = <FilterAltIcon />,
   color = 'primary',
-  variant = 'outline',
-  size = 'sm',
+  variant = 'flat',
+  size = 'md',
   disabled,
   className,
   modalType = 'component',
@@ -37,7 +37,7 @@ export function AddFilterButton({
       startIcon={icon}
       disabled={disabled}
       size={size}
-      className={className}
+      className={`${className} w-full`}
     >
       <Trans message="Filter" />
     </Button>
@@ -56,10 +56,17 @@ export function AddFilterButton({
   );
 
   return (
-    <div className={'w-full'}>
-      <DialogTrigger type={modalType} alwaysVisible>
+    isMobile ? (
+      <DialogTrigger type="popover">
+        {desktopButton}
         <AddFilterDialog filters={filters} />
       </DialogTrigger>
-    </div>
+    ) : (
+      <div className="w-full">
+        <DialogTrigger type={modalType} alwaysVisible>
+          <AddFilterDialog filters={filters} />
+        </DialogTrigger>
+      </div>
+    )
   );
 }
