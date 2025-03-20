@@ -43,7 +43,7 @@ export function ChannelContentSlider({
       />
       <div className={'w-[100vw] md:h-[100dvh] h-[374px]'}>
 
-        <div className="gap-24 md:flex max-md:w-[100vw] w-[calc(100vw-30px)] h-[100dvh] absolute top-0 max-md:left-0 left-[30px] ">
+        <div className="gap-24 md:flex max-md:w-[100vw] w-[calc(100vw-54px)] h-[100dvh] absolute top-0 max-md:left-0 left-[44px] ">
           <div className="relative flex-auto">
             <div
               ref={scrollContainerRef}
@@ -53,21 +53,26 @@ export function ChannelContentSlider({
                 <Slide key={item.id} item={item} index={index} />
               ))}
             </div>
-            <div className="absolute md:top-[50%] top-10 z-20 w-full">
-              <div className="absolute left-8 hidden md:left-6 md:block">
+            <div className="absolute bottom-[-8px] z-9999 w-full h-[200px] flex items-center justify-start">
+              <div className="hidden md:block">
                 <IconButton
-                  variant="outline"
+                  variant="text"
+                  className={'h-[156px]'}
                   size="lg"
                   color="white"
                   disabled={!canScrollBackward}
                   onClick={() => scrollToPreviousPage()}
                 >
-                  <ChevronLeftIcon />
+                  <ChevronLeftIcon className={'!size-[100px]'} />
                 </IconButton>
               </div>
-              <div className="absolute right-8 hidden md:right-14 md:block">
+              <div className={'w-[calc(100%-120px)]'}>
+                <UpNext titles={pagination?.data ?? []} activePage={activePage} />
+              </div>
+              <div className="hidden md:block">
                 <IconButton
-                  variant="outline"
+                  className={'h-[156px]'}
+                  variant="text"
                   size="lg"
                   color="white"
                   disabled={!canScrollForward}
@@ -78,7 +83,6 @@ export function ChannelContentSlider({
               </div>
             </div>
           </div>
-          <UpNext titles={pagination?.data ?? []} activePage={activePage} />
         </div>
 
 
@@ -174,7 +178,7 @@ function UpNext({titles, activePage}: UpNextProps) {
 
   return (
     <AnimatePresence initial={false} mode="wait">
-      <div className=" w-full flex-shrink-0 max-md:hidden absolute bottom-0 px-16">
+      <div className="w-full flex-shrink-0 max-md:hidden px-16">
         {/*<div className="mb-12 text-lg font-semibold">*/}
         {/*  <Trans message="Up next" />*/}
         {/*</div>*/}
