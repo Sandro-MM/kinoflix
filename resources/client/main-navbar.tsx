@@ -16,16 +16,17 @@ export function MainNavbar({position = 'relative'}: Props) {
       <Navbar
       size="md"
       menuPosition="primary"
-      className={clsx(position, 'z-40 w-full flex-shrink-0 sticky top-0')}
+      className={'z-40 w-full flex-shrink-0 fixed top-0 pl-[80px]'}
       border="border-none"
       alwaysDarkMode
     >
+
       <Tooltip label={<Trans message="Search" />}>
-        <IconButton elementType={Link} to="/search" className="md:hidden">
+        <IconButton elementType={Link} to="/search" className="md:hidden absolute left-[30px]">
           <SearchIcon />
         </IconButton>
       </Tooltip>
-      <SearchAutocomplete className="max-md:hidden ml-[124px]" />
+      <SearchAutocomplete className="max-md:hidden mx-auto w-full" />
     </Navbar>
     </>
   );

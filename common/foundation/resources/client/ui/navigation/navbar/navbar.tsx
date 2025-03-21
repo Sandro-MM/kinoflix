@@ -1,4 +1,4 @@
-import {ReactElement, ReactNode} from 'react';
+import {ReactElement, ReactNode, useEffect, useState} from 'react';
 import clsx from 'clsx';
 import {useAuth} from '@common/auth/use-auth';
 import {NotificationDialogTrigger} from '@common/notifications/dialog/notification-dialog-trigger';
@@ -81,9 +81,31 @@ export function Navbar(props: NavbarProps) {
     color = darkModeColor;
   }
 
+  const [scrolled, setScrolled] = useState(false);
+
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 80);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const dynamicStyle = {
+    backgroundColor: scrolled ? null : "#00000000",
+    background: scrolled
+      ? null
+      : "linear-gradient(180deg, rgba(0, 0, 0, .7) 10%, rgba(0, 0, 0, 0))",
+    transition: "all 0.3s ease-in-out",
+    zIndex: 5,
+  };
+
+
   return (
     <div
-      style={alwaysDarkMode ? darkThemeVars : undefined}
+      style={dynamicStyle}
       className={clsx(
         getColorStyle(color, textColor),
         size === 'md' && 'h-64 py-8',

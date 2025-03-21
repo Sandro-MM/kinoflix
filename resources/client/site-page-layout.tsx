@@ -12,7 +12,7 @@ export function SitePageLayout({children}: Props) {
   return (
     <div className="flex flex-col">
       <MainNavbar />
-      <div className="flex-auto">
+      <div className="flex-auto md:ml-[46px]">
         <AdHost slot="general_top" className="py-24" />
         <div className="relative min-h-[1000px] overflow-hidden">
           {children}

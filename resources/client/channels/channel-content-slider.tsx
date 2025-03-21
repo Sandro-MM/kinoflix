@@ -43,7 +43,7 @@ export function ChannelContentSlider({
       />
       <div className={'w-[100vw] md:h-[100dvh] h-[374px]'}>
 
-        <div className="gap-24 md:flex max-md:w-[100vw] w-[calc(100vw-54px)] h-[100dvh] absolute top-0 max-md:left-0 left-[44px] ">
+        <div className="gap-24 md:flex max-md:w-[100vw] w-[100vw] h-[100dvh] absolute top-0 left-0">
           <div className="relative flex-auto">
             <div
               ref={scrollContainerRef}
@@ -97,12 +97,12 @@ interface SlideProps {
 }
 function Slide({item, index}: SlideProps) {
   return (
-    <div className="relative h-full w-full flex-shrink-0 snap-start snap-normal overflow-hidden rounded">
+    <div className="relative h-full w-full flex-shrink-0 snap-start snap-normal overflow-hidden">
       <TitleBackdrop
-        size={'md:h-[100vh] md:w-[calc(100vw-30px)]'}
+        size={'md:h-[100vh] w-[100vw] h-[50vh] max-md:max-h-[400px]'}
         title={item}
         lazy={index > 0}
-        className="min-h-240 md:min-h-0"
+        className="min-h-240 md:min-h-0 w-[100vw]"
         wrapperClassName="h-full"
       />
       <div className="absolute inset-0 isolate flex h-full w-full items-center justify-start gap-24 rounded p-30 text-white md:items-end">
@@ -186,7 +186,7 @@ function UpNext({titles, activePage}: UpNextProps) {
           {items.map(item => (
             <m.div
               key={item.id}
-              className="relative  flex-auto"
+              className="relative  flex-auto max-w-[300px]"
               initial={{opacity: 0}}
               animate={{opacity: 1}}
               exit={{opacity: 0}}

@@ -34,8 +34,10 @@ export function ChannelContent(props: ChannelContentProps) {
   } else {
     return (
       <Fragment>
-        <ChannelLayout {...props} />
-        <NoResultsMessage channel={props.channel} />
+        <div className={'mt-[60px]'}>
+          <ChannelLayout {...props} />
+          <NoResultsMessage channel={props.channel} />
+        </div>
       </Fragment>
     );
   }
