@@ -6,7 +6,7 @@ import {useSettings} from '@ui/settings/use-settings';
 import {useUserTimezone} from '@ui/i18n/use-user-timezone';
 
 export const DateFormatPresets: Record<
-  'numeric' | 'short' | 'long' | 'timestamp' | 'time',
+  'numeric' | 'short' | 'long' | 'timestamp' | 'time' | 'year',
   Intl.DateTimeFormatOptions
 > = {
   numeric: {year: 'numeric', month: '2-digit', day: '2-digit'},
@@ -24,6 +24,9 @@ export const DateFormatPresets: Record<
     hour: '2-digit',
     minute: '2-digit',
   },
+  year:{
+    year: 'numeric'
+  }
 };
 
 interface FormattedDateProps {

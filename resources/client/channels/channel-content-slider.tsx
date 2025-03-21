@@ -18,6 +18,7 @@ import {Link} from 'react-router';
 import {getWatchLink} from '@app/videos/watch-page/get-watch-link';
 import {useChannelContent} from '@common/channels/requests/use-channel-content';
 import {Channel, ChannelContentItem} from '@common/channels/channel';
+import {FormattedDate} from '@ui/i18n/formatted-date';
 
 export function ChannelContentSlider({
   channel,
@@ -63,7 +64,7 @@ export function ChannelContentSlider({
                   disabled={!canScrollBackward}
                   onClick={() => scrollToPreviousPage()}
                 >
-                  <ChevronLeftIcon className={'!size-[100px]'} />
+                  <ChevronLeftIcon />
                 </IconButton>
               </div>
               <div className={'w-[calc(100%-120px)]'}>
@@ -98,6 +99,7 @@ interface SlideProps {
 function Slide({item, index}: SlideProps) {
   return (
     <div className="relative h-full w-full flex-shrink-0 snap-start snap-normal overflow-hidden">
+      <div className={'md:h-[100vh] w-[100vw] h-[50vh] max-md:max-h-[400px]'}>
       <TitleBackdrop
         size={'md:h-[100vh] w-[100vw] h-[50vh] max-md:max-h-[400px]'}
         title={item}
@@ -105,6 +107,8 @@ function Slide({item, index}: SlideProps) {
         className="min-h-240 md:min-h-0 w-[100vw]"
         wrapperClassName="h-full"
       />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#060606] to-[rgba(0,0,0,0)] md:h-[100vh] w-[100vw] h-[50vh] max-md:max-h-[400px]"></div>
+      </div>
       <div className="absolute inset-0 isolate flex h-full w-full items-center justify-start gap-24 rounded p-30 text-white md:items-end">
         <div className="absolute left-0 h-full w-full bg-gradient-to-b from-black/40 max-md:top-0 md:bottom-0 md:h-3/4 md:bg-gradient-to-t md:from-black/100" />
         {/*<TitlePoster*/}
@@ -120,11 +124,13 @@ function Slide({item, index}: SlideProps) {
           <div className="my-8 text-2xl md:text-5xl">
             <TitleLink title={item} />
           </div>
-
+          <FormattedDate date={item.release_date} timezone="utc" />
           {item.description && (
             <p className="max-md:hidden">{item.description}</p>
           )}
-
+          {item.genres && item.genres.map((item) => (
+            <p key={item.id} className="max-md:hidden">{item.name}</p>)
+          )}
           {item.primary_video && (
             <Button
               variant="flat"
@@ -198,15 +204,19 @@ function UpNext({titles, activePage}: UpNextProps) {
                 size="w-full max-h-[220px]"
                 srcSize="md"
                 wrapWithLink
-                showPlayButton
+
               />
+              <div className={'absolute top-12 left-12'}>
+                <FormattedDate preset={'year'} date={item.release_date} timezone="utc" />
+              </div>
+              <div className={'absolute top-12 right-12'}>
+                <TitleRating score={item.rating} className="text-sm" />
+              </div>
               <div className={'absolute bottom-12 left-12'}>
                 <div className="mb-2 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm">
                   <TitleLink title={item} className="text-base font-medium" />
                 </div>
-                <div>
-                  <TitleRating score={item.rating} className="text-sm" />
-                </div>
+
               </div>
             </m.div>
           ))}
