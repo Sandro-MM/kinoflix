@@ -38,7 +38,7 @@ export function SearchAutocomplete({className}: SearchAutocompleteProps) {
         }
       }}
       className={clsx(
-        'flex max-w-[80%] flex-auto items-center rounded bg-chip/40 text',
+        'flex w-[80%] max-w-[1000px] flex-auto items-center rounded bg-chip/40 text',
         className,
       )}
     >

@@ -53,7 +53,7 @@ export function ChannelContentSlider({
                 <Slide key={item.id} item={item} index={index} />
               ))}
             </div>
-            <div className="absolute bottom-[-8px] z-9999 w-full h-[200px] flex items-center justify-start">
+            <div className="absolute bottom-[-8px] z-9999 w-[calc(100vw-60px)] h-[200px] flex items-center justify-start">
               <div className="hidden md:block">
                 <IconButton
                   variant="text"

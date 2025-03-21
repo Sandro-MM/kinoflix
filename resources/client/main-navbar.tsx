@@ -26,7 +26,7 @@ export function MainNavbar({position = 'relative'}: Props) {
           <SearchIcon />
         </IconButton>
       </Tooltip>
-      <SearchAutocomplete className="max-md:hidden mx-auto w-full" />
+      <SearchAutocomplete className="max-md:hidden ml-auto w-full" />
     </Navbar>
     </>
   );
