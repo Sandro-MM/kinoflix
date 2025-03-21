@@ -206,13 +206,13 @@ function UpNext({titles, activePage}: UpNextProps) {
                 wrapWithLink
 
               />
-              <div className={'absolute top-12 left-12'}>
+              <div className={'text-sm absolute top-6 left-6 border solid border-white px-2 rounded-[4px] bg-[rgb(128,128,128,0.3)]'}>
                 <FormattedDate preset={'year'} date={item.release_date} timezone="utc" />
               </div>
-              <div className={'absolute top-12 right-12'}>
+              <div className={'absolute top-6 right-6'}>
                 <TitleRating score={item.rating} className="text-sm" />
               </div>
-              <div className={'absolute bottom-12 left-12'}>
+              <div className={'absolute bottom-8 left-6'}>
                 <div className="mb-2 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm">
                   <TitleLink title={item} className="text-base font-medium" />
                 </div>
