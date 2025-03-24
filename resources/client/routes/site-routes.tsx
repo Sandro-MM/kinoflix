@@ -23,6 +23,10 @@ export const siteRoutes: RouteObject[] = [
         lazy: () => lazyRoute('LandingPage'),
       },
       {
+        path: 'live-tv',
+        lazy: () => lazyRoute('LiveTv'),
+      },
+      {
         path: 'search',
         lazy: () => lazyRoute('SearchPage'),
       },

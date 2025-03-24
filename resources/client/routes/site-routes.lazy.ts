@@ -27,3 +27,4 @@ export {SiteEditUserListPage} from '@app/user-lists/pages/edit-user-list-page';
 export {ListChannelPage} from '@app/channels/channel-page';
 export {Homepage} from '@app/homepage';
 export {LandingPage} from '@app/landing-page/landing-page';
+export {LiveTv} from '@app/live-tv/live-tv';

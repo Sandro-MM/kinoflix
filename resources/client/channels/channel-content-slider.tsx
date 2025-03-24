@@ -54,7 +54,7 @@ export function ChannelContentSlider({
                 <Slide key={item.id} item={item} index={index} />
               ))}
             </div>
-            <div className="absolute bottom-[-8px] z-9999 w-[calc(100vw-60px)] h-[200px] flex items-center justify-start">
+            <div className="absolute bottom-[-8px] left-0 z-9999 w-[calc(100vw-28px)] h-[200px] flex items-center justify-start">
               <div className="hidden md:block">
                 <IconButton
                   variant="text"
@@ -188,7 +188,7 @@ function UpNext({titles, activePage}: UpNextProps) {
         {/*<div className="mb-12 text-lg font-semibold">*/}
         {/*  <Trans message="Up next" />*/}
         {/*</div>*/}
-        <div className="flex flex-row gap-16 relative">
+        <div className="flex flex-row gap-16 justify-center relative">
           {items.map(item => (
             <m.div
               key={item.id}
@@ -213,7 +213,7 @@ function UpNext({titles, activePage}: UpNextProps) {
                 <TitleRating score={item.rating} className="text-sm" />
               </div>
               <div className={'absolute bottom-8 left-6'}>
-                <div className="mb-2 overflow-hidden overflow-ellipsis whitespace-nowrap text-sm">
+                <div className="mb-2 overflow-hidden overflow-ellipsis max-w-[280px] text-sm">
                   <TitleLink title={item} className="text-base font-medium" />
                 </div>
 

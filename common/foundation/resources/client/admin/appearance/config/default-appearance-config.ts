@@ -47,6 +47,7 @@ export const DefaultAppearanceConfig: IAppearanceConfig = {
           '/admin/settings/cache',
           '/admin/settings/providers',
           '/api-docs',
+          "/live-tv"
         ],
         positions: [
           'admin-navbar',
