@@ -145,6 +145,10 @@ export function LiveTv() {
                 episode_num: 1,
                 title_id: 1,
                 model_type: 'video',
+                id: 1,
+                upvotes: 1,
+                downvotes: 1,
+                score: 1,
               }}
               mediaItemId={`123123`}
             />
