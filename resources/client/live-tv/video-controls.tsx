@@ -39,7 +39,7 @@ return(
       >
       <input
         type="text"
-        maxLength="2"
+        maxLength={2}
         className="flex size-34 cursor-pointer items-center justify-center gap-5 bg-transparent p-8 text-[13px]"
         value={hours}
         onChange={(e) => setHours(e.target.value)}
@@ -55,7 +55,7 @@ return(
       >
       <input
         type="text"
-        maxLength="2"
+        maxLength={2}
         className="flex h-34 w-34 cursor-pointer items-center justify-center  bg-transparent gap-5 p-8 text-[13px]"
         value={minutes}
         onChange={(e) => setMinutes(e.target.value)}
