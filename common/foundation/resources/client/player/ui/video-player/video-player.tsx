@@ -126,7 +126,7 @@ function PlayerLayout({apiRef, rightActions}: PlayerLayoutProps) {
   return (
     <div
       className={clsx(
-        'fullscreen-host relative isolate aspect-video bg-black',
+        'fullscreen-host relative isolate aspect-video bg-black w-full h-full',
         !controlsVisible && 'cursor-none',
       )}
       onClick={clickHandler}
