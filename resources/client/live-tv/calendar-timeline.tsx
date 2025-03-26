@@ -67,6 +67,6 @@ const getPastDates = (days: number): DateItem[] => {
     });
   }
 
-  return result;
+  return result.reverse();
 };
 

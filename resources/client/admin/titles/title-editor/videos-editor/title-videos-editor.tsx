@@ -97,6 +97,7 @@ export function TitleVideosEditor() {
           icon={<TuneIcon />}
           color={null}
           variant="outline"
+          modalType={"modal"}
           filters={filters}
         />
       </div>

@@ -1,4 +1,3 @@
-import {LandingPageContent} from '@app/landing-page/landing-page-content';
 import {useSettings} from '@ui/settings/use-settings';
 import React, {Fragment, useEffect, useState} from 'react';
 import {DefaultMetaTags} from '@common/seo/default-meta-tags';
