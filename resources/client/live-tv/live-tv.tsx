@@ -8,16 +8,13 @@ import {SiteVideoPlayer} from '@app/videos/site-video-player';
 import {PastDatesList} from '@app/live-tv/calendar-timeline';
 import {VideoControls} from '@app/live-tv/video-controls';
 import {Button} from '@ui/buttons/button';
-import {AddFilterDialog} from '@common/datatable/filters/add-filter-dialog';
 import {DialogTrigger} from '@ui/overlays/dialog/dialog-trigger';
 import {DialogHeader} from '@ui/overlays/dialog/dialog-header';
 import {Trans} from '@ui/i18n/trans';
 import {DialogBody} from '@ui/overlays/dialog/dialog-body';
 import {Dialog} from '@ui/overlays/dialog/dialog';
+import {useWindowWidth} from '@app/live-tv/width-listener';
 
-interface ContentProps {
-  content: LandingPageContent;
-}
 
 interface Channel {
   id: string;
@@ -49,7 +46,7 @@ export function LiveTv() {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-
+  const width = useWindowWidth();
   const settings = useSettings();
 
   useEffect(() => {
@@ -92,26 +89,7 @@ export function LiveTv() {
 
 
 
-  const useWindowWidth = () => {
-    const [width, setWidth] = useState(window.innerWidth);
 
-    useEffect(() => {
-      let timeout: NodeJS.Timeout;
-      const handleResize = () => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => setWidth(window.innerWidth), 200);
-      };
-
-      window.addEventListener("resize", handleResize);
-
-      return () => {
-        clearTimeout(timeout);
-        window.removeEventListener("resize", handleResize);
-      };
-    }, []);
-
-    return width;
-  };
 
 
 
@@ -130,7 +108,7 @@ export function LiveTv() {
       <MainNavbar />
 
       <div className={'flex pt-60 md:ml-54'}>
-        {window.innerWidth >= 1080 && (
+        {width >=  1024 && (
           <>
           <div
             className={
@@ -175,18 +153,19 @@ export function LiveTv() {
         </div>
       </div>
 
-      {window.innerWidth >= 1080 && (
+      {width >=  1024 && (
         <div className={'relative'}>
           <VideoControls />
         </div>
       )}
 
       <div className={'mt-60'}>
-        {window.innerWidth >= 1080 && selectedChannel && (
+        {width >= 1024 && selectedChannel && (
           <>{pastDatesList}</>
         )}
       </div>
-      {window.innerWidth <= 1080 && (
+
+      {width <= 1024 && (
         <>
           <DialogTrigger type="popover">
             <Button
