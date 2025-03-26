@@ -16,7 +16,7 @@ interface AddFilterButtonProps {
   disabled?: boolean;
   size?: ButtonProps['size'];
   className?: string;
-  modalType: 'component' | 'modal' | 'popover' | 'tray'
+  modalType?: 'component' | 'modal' | 'popover' | 'tray'
 }
 export function AddFilterButton({
   filters,

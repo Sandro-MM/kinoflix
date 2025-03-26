@@ -94,9 +94,9 @@ export function Navbar(props: NavbarProps) {
   }, []);
 
   const dynamicStyle = {
-    backgroundColor: scrolled ? null : "#00000000",
+    backgroundColor: scrolled ? 'transparent' : "#00000000",
     background: scrolled
-      ? null
+      ? 'transparent'
       : "linear-gradient(180deg, rgba(0, 0, 0, .7) 10%, rgba(0, 0, 0, 0))",
     transition: "all 0.3s ease-in-out",
     zIndex: 5,

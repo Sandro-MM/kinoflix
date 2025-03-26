@@ -197,7 +197,7 @@ export function DialogTrigger(props: Props) {
       labelId,
       descriptionId,
       isDismissable: props.type === 'component' ? false : isDismissable,
-      close : props.type === 'component' ? false : close,
+      close: props.type === 'component' ? (() => {}) : close,
       value,
       initialValue: initialValueRef.current,
       setValue,
