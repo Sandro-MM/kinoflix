@@ -144,7 +144,7 @@ export const CustomMenuItem = forwardRef<HTMLAnchorElement, MenuItemProps>(
     const location = useLocation();
 
     const getTextClass = (action: any) => {
-      return action === location.pathname ? '#fcba03' : '';
+      return location.pathname.startsWith(action) ? "text-primary" : "";
     };
 
     if (item.type === 'link') {
@@ -174,11 +174,15 @@ export const CustomMenuItem = forwardRef<HTMLAnchorElement, MenuItemProps>(
             ? matchDescendants(item.action)
             : matchDescendants
         }
-        className={props =>
-          clsx(baseClassName, className?.(props), focusClassNames, position)
-
+        className={(props) =>
+          clsx(
+            baseClassName,
+            className?.(props),
+            focusClassNames,
+            position,
+            `${getTextClass(item.action)}`
+          )
         }
-        style={{color:getTextClass(item.action)}}
         to={item.action}
         target={item.target}
         data-menu-item-id={item.id}

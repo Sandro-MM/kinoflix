@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {Button} from '@ui/buttons/button';
+import {useDialogContext} from '@ui/overlays/dialog/dialog-context';
 
 interface DateItem {
   day: string;
@@ -17,7 +18,7 @@ interface PastDatesListProps {
 export const PastDatesList = ({ days, selectedDay, setSelectedDay }: PastDatesListProps) => {
 
 
-
+  const dialogContext = useDialogContext();
   const [pastDates, setPastDates] = useState<DateItem[]>([]);
 
   useEffect(() => {
@@ -33,9 +34,13 @@ export const PastDatesList = ({ days, selectedDay, setSelectedDay }: PastDatesLi
             variant={selectedDay === date.fullDate ? "raised" : "outline"}
             color={selectedDay === date.fullDate ? "primary" : "chip" }
             radius={'rounded-[0px]'}
-            className="lg:mt-24 min-h-56 min-w-144 flex gap-12 max-lg:!justify-start"
+            className="min-h-56 min-w-144 flex gap-12 max-lg:!justify-start"
             key={index}
-            onClick={() => setSelectedDay(date.fullDate)}
+            onClick={() => {setSelectedDay(date.fullDate)
+              if (dialogContext?.close) {
+              dialogContext.close();
+            }}
+        }
 
           >
           <div className={'text-2xl'}>{date.day}</div>

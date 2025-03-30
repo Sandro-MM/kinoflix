@@ -19,6 +19,7 @@ import {getWatchLink} from '@app/videos/watch-page/get-watch-link';
 import {useChannelContent} from '@common/channels/requests/use-channel-content';
 import {Channel, ChannelContentItem} from '@common/channels/channel';
 import {FormattedDate} from '@ui/i18n/formatted-date';
+import {useTrans} from '@ui/i18n/use-trans';
 
 export function ChannelContentSlider({
   channel,
@@ -34,7 +35,6 @@ export function ChannelContentSlider({
   } = useCarousel({rotate: true});
   const {data: pagination} =
     useChannelContent<ChannelContentItem<Title>>(channel);
-
   return (
     <Fragment>
       <ChannelHeader
@@ -117,16 +117,31 @@ function Slide({item, index}: SlideProps) {
         {/*  srcSize="md"*/}
         {/*  className="z-10 shadow-md max-md:hidden"*/}
         {/*/>*/}
-        <div className="z-10 text-lg md:max-w-620 absolute md:bottom-[250px] bottom-16 left-16  md:left-[70px]">
+        <div className="z-10 text-lg md:max-w-620 absolute md:bottom-[35%] bottom-16 left-16  md:left-[70px]">
 
-          <TitleRating score={item.rating} />
-
-          <div className="my-8 text-2xl md:text-5xl">
+          <div className="mb-30 text-2xl md:text-5xl">
             <TitleLink title={item} />
           </div>
-          <FormattedDate date={item.release_date} timezone="utc" />
+          <div className={'flex gap-[20px] items-center'}>
+            <TitleRating score={item.rating} />
+
+            <div className={'size-8 rounded-full bg-text-main'}></div>
+
+            <div>
+              <FormattedDate preset={'year'} date={item.release_date} timezone="utc" /> Y.
+            </div>
+            <div className={'size-8 rounded-full bg-text-main'}></div>
+            <div className={'my-8'}>
+              Armenia, China, India
+            </div>
+          </div>
+
+          <div className={'my-8'}>
+            Action, Drama, Comedy
+          </div>
+
           {item.description && (
-            <p className="max-md:hidden">{item.description}</p>
+            <p className="max-md:hidden mt-10">{item.description}</p>
           )}
           {item.genres && item.genres.map((item) => (
             <p key={item.id} className="max-md:hidden">{item.name}</p>)
@@ -206,15 +221,27 @@ function UpNext({titles, activePage}: UpNextProps) {
                 wrapWithLink
 
               />
-              <div className={'text-sm absolute top-6 left-6 border solid border-white px-2 rounded-[4px] bg-[rgb(128,128,128,0.3)]'}>
-                <FormattedDate preset={'year'} date={item.release_date} timezone="utc" />
+              <div className={'absolute top-0 left-0 w-full h-50  rounded-[3px]'}
+                   style={{
+                 background: "linear-gradient(to bottom, rgba(0, 0, 0, 50%) 0, rgba(0, 0, 0, 0) 80%)",
+              }}
+              >
+                <div className={'text-sm absolute top-12 left-12 border solid border-current px-4 py-1 rounded-[4px]'}>
+                  <FormattedDate preset={'year'} date={item.release_date} timezone="utc" />
+                </div>
+                <div className={'absolute top-12 right-12'}>
+                  <TitleRating score={item.rating} className="text-sm" />
+                </div>
               </div>
-              <div className={'absolute top-6 right-6'}>
-                <TitleRating score={item.rating} className="text-sm" />
-              </div>
-              <div className={'absolute bottom-8 left-6'}>
-                <div className="mb-2 overflow-hidden overflow-ellipsis max-w-[280px] text-sm">
-                  <TitleLink title={item} className="text-base font-medium" />
+
+
+              <div style={{
+                background: "linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 50%) 80%)"
+              }}
+                   className={'absolute w-full h-50 bottom-0 left-0'}>
+                <div
+                  className="absolute bottom-12 left-12 overflow-hidden text-ellipsis whitespace-nowrap max-w-[250px] text-sm">
+                <TitleLink title={item} className="text-base font-medium" />
                 </div>
 
               </div>

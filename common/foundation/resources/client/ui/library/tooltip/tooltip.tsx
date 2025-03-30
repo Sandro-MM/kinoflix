@@ -38,7 +38,7 @@ const closeOpenTooltips = (tooltipId: string) => {
 };
 
 interface Props {
-  label: ReactElement<MessageDescriptor> | string;
+  label: ReactElement<MessageDescriptor> | string | ReactElement;
   placement?: Placement;
   children: ReactElement;
   variant?: 'neutral' | 'positive' | 'danger';

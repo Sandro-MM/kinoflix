@@ -23,7 +23,7 @@ export const siteRoutes: RouteObject[] = [
         lazy: () => lazyRoute('LandingPage'),
       },
       {
-        path: 'live-tv',
+        path: 'live-tv/:routeChannelId?/:routeDate?/:routeTime?',
         lazy: () => lazyRoute('LiveTv'),
       },
       {
