@@ -16,10 +16,8 @@ import {useWindowWidth} from '@app/live-tv/width-listener';
 import {TimelineItem} from '@app/live-tv/timeline-item';
 import {useNavigate, useParams} from 'react-router';
 import {useDialogContext} from '@ui/overlays/dialog/dialog-context';
-import {
-  ParseCustomTimestamp,
-} from '@app/live-tv/live-tv-time converter';
-
+import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
+import {Tooltip} from '@ui/tooltip/tooltip';
 
 interface Channel {
   id: string;
@@ -32,7 +30,11 @@ interface Channel {
   slug: string;
   stream: string;
   archiveDays: number;
-  vast: any;
+  vast: {
+    enabled: boolean;
+    place: string;
+    url: string;
+  };
 }
 
 interface Program {
@@ -48,23 +50,24 @@ interface Program {
 
 
 export function LiveTv() {
-  const { routeChannelId,routeDate,routeTime } = useParams();
+  const {routeChannelId, routeDate, routeTime} = useParams();
   const [channels, setChannels] = useState<Channel[] | null>(null);
   const [programs, setPrograms] = useState<Program[] | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const width = useWindowWidth();
   const settings = useSettings();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchChannels(setChannels, setSelectedChannel, routeChannelId);
-    if (routeDate){
+    if (routeDate) {
       setSelectedDate(routeDate);
     } else {
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toISOString().split('T')[0];
       setSelectedDate(today);
       navigate(`/live-tv/${routeChannelId}/${today}`);
     }
@@ -72,27 +75,32 @@ export function LiveTv() {
 
   useEffect(() => {
     fetchPrograms(selectedChannel?.id, selectedDate!);
-  }, [selectedChannel,selectedDate]);
+    if (selectedChannel) {
+      console.log(selectedChannel.stream, 'selectedChannel.stream');
+      setSelectedVideo(selectedChannel.stream);
+    }
+  }, [selectedChannel, selectedDate]);
 
-
-  const fetchChannels = async (setChannels:(channels: Channel[]) => void, setSelectedChannel:(channel: Channel) => void, routeChannelId:string | undefined) => {
+  const fetchChannels = async (
+    setChannels: (channels: Channel[]) => void,
+    setSelectedChannel: (channel: Channel) => void,
+    routeChannelId: string | undefined,
+  ) => {
     try {
-      const response = await fetch("https://api.oho.ge/tv/streaming/channels/");
+      const response = await fetch('https://api.oho.ge/tv/streaming/channels/');
       const data = await response.json();
-
       setChannels(data);
-
       // Find channel by slug or select first channel if slug is not found
-      const selected = data.find((ch:Channel) => ch.id === routeChannelId) || data[0];
+      const selected =
+        data.find((ch: Channel) => ch.id === routeChannelId) || data[0];
       setSelectedChannel(selected);
-
-
+      console.log(selected.stream, 'selected.channel.stream');
     } catch (error) {
-      console.error("Error fetching channels:", error);
+      console.error('Error fetching channels:', error);
     }
   };
 
-  const fetchPrograms = async (slug: any,date:string) => {
+  const fetchPrograms = async (slug: any, date: string) => {
     try {
       const response = await fetch(
         `https://api.oho.ge/tv/streaming/programs/?channel_id=${slug}&date=${date}`,
@@ -113,39 +121,60 @@ export function LiveTv() {
 
   const setChannelToStateAndQuery = (channel: Channel) => {
     setSelectedChannel(channel);
+    setSelectedVideo(channel.stream);
     navigate(`/live-tv/${channel.id}/${routeDate}/${selectedTime}`);
-  }
+  };
 
   const changeDate = (selectedDate: string) => {
     setSelectedDate(selectedDate);
     navigate(`/live-tv/${routeChannelId}/${selectedDate}/${selectedTime}`);
-  }
+  };
 
-  const setProgram = (program:Program) => {
+  const setProgram = (program: Program) => {
     setSelectedProgram(program);
+    setSelectedVideo(
+      `https://api.oho.ge/tv/streaming/dvr/?start=${program.start}&end=${program.stop}&id=${program.channel}.m3u8`,
+    );
     navigate(`/live-tv/${routeChannelId}/${routeDate}/${program.start}`);
-  }
+  };
 
-
-
-  const  channelSelect = <ChannelsSelect channels={channels} selectedChannel={selectedChannel} setSelectedChannel={setChannelToStateAndQuery} />
-  const programSelect =  <ProgramSelect programs={programs} selectedProgram={selectedProgram} setSelectedProgram={setProgram} />
-  const pastDatesList =
+  const channelSelect = (
+    <ChannelsSelect
+      channels={channels}
+      selectedChannel={selectedChannel}
+      setSelectedChannel={setChannelToStateAndQuery}
+    />
+  );
+  const channelSelectDesktop = (
+    <ChannelsSelectDesktop
+      channels={channels}
+      selectedChannel={selectedChannel}
+      setSelectedChannel={setChannelToStateAndQuery}
+    />
+  );
+  const programSelect = (
+    <ProgramSelect
+      programs={programs}
+      selectedProgram={selectedProgram}
+      setSelectedProgram={setProgram}
+    />
+  );
+  const pastDatesList = (
     <PastDatesList
-    days={selectedChannel?.archiveDays || 0}
-    selectedDay={selectedDate}
-    setSelectedDay={changeDate}
-  />
+      days={selectedChannel?.archiveDays || 0}
+      selectedDay={selectedDate}
+      setSelectedDay={changeDate}
+    />
+  );
 
-
-  const DesktopSelectMenu = width >=  1024 && (
+  const DesktopSelectMenu = width >= 1024 && (
     <>
       <div
         className={
           'flex max-h-[calc(100vh-262px)] w-[260px] min-w-[260px] max-w-[260px] flex-col overflow-y-scroll'
         }
       >
-        {channelSelect}
+        {channelSelectDesktop}
       </div>
       <div
         className={
@@ -155,61 +184,51 @@ export function LiveTv() {
         {programSelect}
       </div>
     </>
-  )
+  );
 
-  const videoPlayer = <SiteVideoPlayer
-    key={selectedChannel?.id}
-    autoPlay={true}
-    video={{
-      src: `https:${selectedChannel?.stream}.m3u8`,
-      name: '123',
-      type: 'stream',
+  const videoPlayer = (
+    <>
+      {selectedVideo && (
+        <VideoPlayerLiveTV
+          vastUrl={selectedChannel?.vast.url}
+          key={selectedVideo}
+          stream={selectedVideo}
+        />
+      )}
+    </>
+  );
 
-      category: 'full',
-      origin: 'local',
-      quality: '480',
-      approved: true,
-      user_id: 1,
-      season_num: 1,
-      episode_num: 1,
-      title_id: 1,
-      model_type: 'video',
-      id: 1,
-      upvotes: 1,
-      downvotes: 1,
-      score: 1,
-    }}
-    mediaItemId={`123123`}
-  />
-
-
-  const mobileSelectMenu = <>
-    <DialogTriggerItem selectedDate={<div
-      className={
-        'flex h-[48px] w-max items-center justify-start gap-10'
-      }
-    >
-      <img
-        className={'size-24'}
-        src={selectedChannel?.cover}
-        alt={selectedChannel?.name?.en}
-      />
-      {selectedChannel?.name.en}
-    </div>} message={'Channels'}>
-      {channelSelect}
-    </DialogTriggerItem>
-    <DialogTriggerItem selectedDate={selectedDate} message={'Days'}>
-      {pastDatesList}
-    </DialogTriggerItem>
-    <div
-      className={
-        'flex h-[500px] w-full !min-w-[300px] flex-col overflow-y-scroll'
-      }
-    >
-      {programSelect}
-    </div>
-  </>
-
+  const mobileSelectMenu = (
+    <>
+      <DialogTriggerItem
+        selectedDate={
+          <div
+            className={'flex h-[48px] w-max items-center justify-start gap-10'}
+          >
+            <img
+              className={'size-24'}
+              src={selectedChannel?.cover}
+              alt={selectedChannel?.name?.en}
+            />
+            {selectedChannel?.name.en}
+          </div>
+        }
+        message={'Channels'}
+      >
+        {channelSelect}
+      </DialogTriggerItem>
+      <DialogTriggerItem selectedDate={selectedDate} message={'Days'}>
+        {pastDatesList}
+      </DialogTriggerItem>
+      <div
+        className={
+          'flex h-[500px] w-full !min-w-[300px] flex-col overflow-y-scroll'
+        }
+      >
+        {programSelect}
+      </div>
+    </>
+  );
 
   return (
     <Fragment>
@@ -221,12 +240,12 @@ export function LiveTv() {
           {selectedChannel && videoPlayer}
         </div>
       </div>
-      {width >=  1024 && (
+      {width >= 1024 && (
         <div className={'relative'}>
           <VideoControls />
         </div>
       )}
-      <div className={'mt-60 ml-48'}>
+      <div className={'ml-48 mt-60'}>
         {width >= 1024 && selectedChannel && (
           <>
             <TimelineItem
@@ -248,17 +267,11 @@ export function LiveTv() {
   );
 }
 
-
-
-
 interface ChannelsSelectProps {
   channels: Channel[] | null;
   selectedChannel: Channel | null;
   setSelectedChannel: (channel: Channel) => void;
 }
-
-
-
 
 export const ChannelsSelect: React.FC<ChannelsSelectProps> = ({
   channels,
@@ -267,19 +280,21 @@ export const ChannelsSelect: React.FC<ChannelsSelectProps> = ({
 }) => {
   const dialogContext = useDialogContext();
   return (
-   <>
+    <>
       {channels &&
         channels.map(channel => (
           <Button
             variant={selectedChannel === channel ? 'raised' : 'outline'}
             color={selectedChannel === channel ? 'primary' : 'chip'}
             radius={'rounded-[0px]'}
-            className="block min-h-56 lg:w-[250px] min-w-[250px] lg:max-w-[250px] w-full !justify-start !px-12"
+            className="block min-h-56 w-full min-w-[250px] !justify-start !px-12 lg:w-[250px] lg:max-w-[250px]"
             key={channel?.id}
-            onClick={() => {setSelectedChannel(channel);
+            onClick={() => {
+              setSelectedChannel(channel);
               if (dialogContext?.close) {
-              dialogContext.close();
-            }}}
+                dialogContext.close();
+              }
+            }}
           >
             <div
               className={
@@ -299,6 +314,54 @@ export const ChannelsSelect: React.FC<ChannelsSelectProps> = ({
   );
 };
 
+export const ChannelsSelectDesktop: React.FC<ChannelsSelectProps> = ({
+  channels,
+  selectedChannel,
+  setSelectedChannel,
+}) => {
+  return (
+    <>
+      {channels &&
+        channels.map(channel => (
+          <Tooltip
+            placement={'right'}
+            key={channel?.id}
+            label={
+              <div>
+                <VideoPlayerLiveTV
+                  key={channel?.id}
+                  stream={`${channel?.stream}?quality=low`}
+                  enableControls={false}
+                />
+                {channel?.stream}
+              </div>
+            }
+          >
+            <Button
+              variant={selectedChannel === channel ? 'raised' : 'outline'}
+              color={selectedChannel === channel ? 'primary' : 'chip'}
+              radius={'rounded-[0px]'}
+              className="block min-h-56 w-full min-w-[250px] !justify-start !px-12 lg:w-[250px] lg:max-w-[250px]"
+              onClick={() => setSelectedChannel(channel)}
+            >
+              <div
+                className={
+                  'flex h-[48px] w-max items-center justify-start gap-10'
+                }
+              >
+                <img
+                  className={'size-30'}
+                  src={channel?.cover}
+                  alt={channel?.name?.en}
+                />
+                {channel?.name.en}
+              </div>
+            </Button>
+          </Tooltip>
+        ))}
+    </>
+  );
+};
 
 interface ProgramSelectProps {
   programs: Program[] | null;
@@ -306,16 +369,11 @@ interface ProgramSelectProps {
   setSelectedProgram: (program: Program) => void;
 }
 
-
-
-
 export const ProgramSelect: React.FC<ProgramSelectProps> = ({
-                                                               programs,
-                                                               selectedProgram,
-                                                               setSelectedProgram,
+  programs,
+  selectedProgram,
+  setSelectedProgram,
 }) => {
-
-
   return (
     <>
       {programs &&
@@ -324,7 +382,7 @@ export const ProgramSelect: React.FC<ProgramSelectProps> = ({
             variant={'outline'}
             color={selectedProgram === program ? 'primary' : 'chip'}
             radius={'rounded-[0px]'}
-            className="m-0 h-max min-h-38 lg:w-[290px] min-w-[290px] lg:max-w-[290px] w-full !justify-start text-wrap !p-12 !text-left"
+            className="m-0 h-max min-h-38 w-full min-w-[290px] !justify-start text-wrap !p-12 !text-left lg:w-[290px] lg:max-w-[290px]"
             key={index}
             onClick={() => setSelectedProgram(program)}
           >
@@ -336,13 +394,29 @@ export const ProgramSelect: React.FC<ProgramSelectProps> = ({
   );
 };
 
-const DialogTriggerItem = ({ children, selectedDate,message}: { children: React.ReactNode; selectedDate: string | null | React.ReactNode,message:string}) => (
+const DialogTriggerItem = ({
+  children,
+  selectedDate,
+  message,
+}: {
+  children: React.ReactNode;
+  selectedDate: string | null | React.ReactNode;
+  message: string;
+}) => (
   <DialogTrigger type="popover">
-    <Button variant="raised" color="primary" radius="rounded-[0px]" className="w-full h-32">
+    <Button
+      variant="raised"
+      color="primary"
+      radius="rounded-[0px]"
+      className="h-32 w-full"
+    >
       <div className="text-xl">{selectedDate}</div>
     </Button>
-    <Dialog  className="min-w-[300px] !w-full" size="auto">
-      <DialogHeader className="w-full items-center justify-center" padding="px-14 py-10">
+    <Dialog className="!w-full min-w-[300px]" size="auto">
+      <DialogHeader
+        className="w-full items-center justify-center"
+        padding="px-14 py-10"
+      >
         <Trans message={message} />
       </DialogHeader>
       <DialogBody padding="p-0 flex flex-col items-center justify-center">
@@ -350,4 +424,42 @@ const DialogTriggerItem = ({ children, selectedDate,message}: { children: React.
       </DialogBody>
     </Dialog>
   </DialogTrigger>
+);
+
+export const VideoPlayerLiveTV = ({
+  key,
+  stream,
+  enableControls,
+  vastUrl,
+}: {
+  key: string;
+  stream: string;
+  enableControls?: boolean;
+  vastUrl?: string;
+}) => (
+  <SiteVideoPlayer
+    enableControls={enableControls}
+    key={key}
+    vastUrl={vastUrl}
+    autoPlay={true}
+    video={{
+      src: stream,
+      name: '123',
+      type: 'stream',
+      category: 'full',
+      origin: 'local',
+      quality: '480',
+      approved: true,
+      user_id: 1,
+      season_num: 1,
+      episode_num: 1,
+      title_id: 1,
+      model_type: 'video',
+      id: 1,
+      upvotes: 1,
+      downvotes: 1,
+      score: 1,
+    }}
+    mediaItemId={`123123`}
+  />
 );

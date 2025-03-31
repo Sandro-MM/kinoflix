@@ -1,12 +1,9 @@
 import {TimeLineSvg} from '@app/live-tv/time-line-svg';
 import React from 'react';
-import {Trans} from '@ui/i18n/trans';
-import {IconButton} from '@ui/buttons/icon-button';
-import {SettingsIcon} from '@ui/icons/material/Settings';
 import {Tooltip} from '@ui/tooltip/tooltip';
 import TimelineSelector from '@app/live-tv/time-line-hover';
-import {FormattedDate} from '@ui/i18n/formatted-date';
 import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
+import {VideoPlayerLiveTV} from '@app/live-tv/live-tv';
 
 interface Program {
   title: {
@@ -69,10 +66,9 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
       <Tooltip key={index} label={
         <div>
 
-          <div>{ParseCustomTimestamp(program.start)}</div>
-
-
-        {program.title.text}
+          <div className={'mx-auto w-max my-4'}>{ParseCustomTimestamp(program.start)}</div>
+          <VideoPlayerLiveTV enableControls={false} key={program.title.text} stream={`https://api.oho.ge/tv/streaming/dvr/?start=${program.start}&end=${program.stop}&id=${program.channel}&quality=low.m3u8`}/>
+          <div className={'mx-auto w-max my-4'}>{program.title.text}</div>
       </div>}>
       <div
         onClick={() => setSelectedProgram(program)}

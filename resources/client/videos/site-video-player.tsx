@@ -3,7 +3,7 @@ import {VideoPlayer} from '@common/player/ui/video-player/video-player';
 import {VideoThumbnail} from '@app/videos/video-thumbnail';
 import {IconButton} from '@ui/buttons/icon-button';
 import {MediaPlayIcon} from '@ui/icons/media/media-play';
-import React, {memo, useEffect, useRef} from 'react';
+import React, {memo, useEffect, useRef, useState} from 'react';
 import {Video} from '@app/titles/models/video';
 import {Title} from '@app/titles/models/title';
 import {Episode} from '@app/titles/models/episode';
@@ -26,9 +26,11 @@ interface Props {
   mediaItemId?: string;
   logPlays?: boolean;
   showEpisodeSelector?: boolean;
+  enableControls?: boolean;
+  vastUrl?: string;
 }
 export const SiteVideoPlayer = memo((props: Props) => {
-  const {video, autoPlay, title, episode} = props;
+  const {video, autoPlay, title, episode, vastUrl} = props;
   if (
     video.type === 'video' ||
     video.type === 'stream' ||
@@ -107,6 +109,7 @@ function NativeVideoPlayer({
   autoPlay,
   logPlays,
   showEpisodeSelector,
+  enableControls
 }: Props) {
   const playerRef = useRef<PlayerActions>(null!);
   const logVideoPlay = useLogVideoPlay(playerRef, {enabled: logPlays});
@@ -128,6 +131,7 @@ function NativeVideoPlayer({
 
   return (
     <VideoPlayer
+      enableControls={enableControls}
       apiRef={playerRef}
       id="player"
       queue={[mediaItem, ...related]}

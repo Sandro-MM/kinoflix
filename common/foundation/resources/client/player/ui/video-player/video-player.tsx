@@ -36,6 +36,7 @@ interface Props {
   onBeforePlayPrevious?: PlayerStoreOptions['onBeforePlayPrevious'];
   apiRef?: MutableRefObject<PlayerActions>;
   rightActions?: ReactNode;
+  enableControls?: boolean;
 }
 export function VideoPlayer({
   id,
@@ -49,6 +50,7 @@ export function VideoPlayer({
   onDestroy,
   apiRef,
   rightActions,
+  enableControls
 }: Props) {
   return (
     <PlayerContext
@@ -66,7 +68,7 @@ export function VideoPlayer({
       }}
     >
       <QueueOverrider src={src} queue={queue} />
-      <PlayerLayout apiRef={apiRef} rightActions={rightActions} />
+      <PlayerLayout enableControls={enableControls} apiRef={apiRef} rightActions={rightActions} />
     </PlayerContext>
   );
 }
@@ -74,8 +76,9 @@ export function VideoPlayer({
 interface PlayerLayoutProps {
   apiRef?: MutableRefObject<PlayerActions>;
   rightActions?: ReactNode;
+  enableControls?: boolean;
 }
-function PlayerLayout({apiRef, rightActions}: PlayerLayoutProps) {
+function PlayerLayout({apiRef, rightActions,enableControls = true }: PlayerLayoutProps) {
   const leaveTimerRef = useRef<number | null>();
   const inactiveTimerRef = useRef<number | null>();
   const pointerIsOverControls = useRef(false);
@@ -165,6 +168,7 @@ function PlayerLayout({apiRef, rightActions}: PlayerLayoutProps) {
         size="w-50 h-50"
       />
       <BottomGradient />
+       { enableControls &&
       <VideoPlayerControls
         rightActions={rightActions}
         onPointerEnter={() => {
@@ -176,6 +180,7 @@ function PlayerLayout({apiRef, rightActions}: PlayerLayoutProps) {
           pointerIsOverControls.current = false;
         }}
       />
+    }
     </div>
   );
 }
