@@ -83,10 +83,9 @@ export function Navbar(props: NavbarProps) {
 
   const [scrolled, setScrolled] = useState(false);
 
-
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 80);
+      setScrolled((prev) => window.scrollY > 80);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -94,14 +93,13 @@ export function Navbar(props: NavbarProps) {
   }, []);
 
   const dynamicStyle = {
-    backgroundColor: scrolled ? 'transparent' : "#00000000",
+    backgroundColor: scrolled ? "" : "transparent",
     background: scrolled
-      ? 'transparent'
+      ? ""
       : "linear-gradient(180deg, rgba(0, 0, 0, .7) 10%, rgba(0, 0, 0, 0))",
     transition: "all 0.3s ease-in-out",
     zIndex: 5,
   };
-
 
   return (
     <div
