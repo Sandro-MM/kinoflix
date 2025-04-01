@@ -56,7 +56,7 @@ export function LiveTv() {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | number | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const width = useWindowWidth();
   const settings = useSettings();
@@ -122,12 +122,12 @@ export function LiveTv() {
   const setChannelToStateAndQuery = (channel: Channel) => {
     setSelectedChannel(channel);
     setSelectedVideo(channel.stream);
-    navigate(`/live-tv/${channel.id}/${routeDate}/${selectedTime}`);
+    navigate(`/live-tv/${channel.id}/${routeDate}/${selectedTime?.toString()}`);
   };
 
   const changeDate = (selectedDate: string) => {
     setSelectedDate(selectedDate);
-    navigate(`/live-tv/${routeChannelId}/${selectedDate}/${selectedTime}`);
+    navigate(`/live-tv/${routeChannelId}/${selectedDate}/${selectedTime?.toString()}`);
   };
 
   const setProgram = (program: Program) => {

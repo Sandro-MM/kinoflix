@@ -20,8 +20,8 @@ interface TimelineItemProps {
   selectedProgram?: Program | null;
   setSelectedProgram: (program: Program) => void;
   selectedDate: string | null;
-  setSelectedTime: (time: string | null) => void;
-  selectedTime: string | null;
+  setSelectedTime: (time: string | null | number) => void;
+  selectedTime: string | null | number;
 }
 
 
@@ -43,12 +43,13 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
     };
   });
 
-  const getProgramPosition = (startTime: string) => {
-    const match = startTime.match(/\d{8}(\d{2})(\d{2})/);
-    if (!match) return "0%";
+  const getProgramPosition = (startTime: number | string) => {
+    if (typeof startTime !== "number") return "0%";
 
-    const startHour = parseInt(match[1]); // Extract HH
-    const startMinutes = parseInt(match[2]); // Extract MM
+    const date = new Date(+startTime * 1000); // Convert from seconds to milliseconds
+
+    const startHour = date.getUTCHours(); // Extract HH
+    const startMinutes = date.getUTCMinutes(); // Extract MM
 
     const totalHours = startHour + startMinutes / 60; // Convert to fractional hours
     const adjustedHour = (totalHours - 6 + 24) % 24; // Shift so 06:00 is 0%

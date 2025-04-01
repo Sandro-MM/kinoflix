@@ -1,11 +1,8 @@
-export const ParseCustomTimestamp = (timestamp: string) => {
-  const year = timestamp.substring(0, 4);
-  const month = timestamp.substring(4, 6);
-  const day = timestamp.substring(6, 8);
-  const hours = timestamp.substring(8, 10);
-  const minutes = timestamp.substring(10, 12);
-  const seconds = timestamp.substring(12, 14);
-  const timezone = timestamp.substring(15);
+export const ParseCustomTimestamp = (timestamp: number | string) => {
+  const date = new Date(+timestamp * 1000);
+
+  const hours = date.getUTCHours().toString().padStart(2, "0");
+  const minutes = date.getUTCMinutes().toString().padStart(2, "0");
 
   return `${hours}:${minutes}`;
 };

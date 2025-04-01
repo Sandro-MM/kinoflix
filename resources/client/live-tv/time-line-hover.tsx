@@ -4,23 +4,22 @@ import {Tooltip} from '@ui/tooltip/tooltip';
 import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
 
 interface TimelineSelectorProps {
-  onTimeSelect: (time: string) => void;
+  onTimeSelect: (time: string | number) => void;
   children: ReactElement | null | undefined;
-  selectedDate: string | null | undefined;
+  selectedDate: string | number | null | undefined;
 }
 
 const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,children,selectedDate }) => {
   const timelineRef = useRef<HTMLDivElement | null>(null);
-  const [hoveredTime, setHoveredTime] = useState<string | null>(null);
+  const [hoveredTime, setHoveredTime] = useState<string | number | null>(null);
   const [hoverPercent, setHoverPercent] = useState<number | null>(null);
   const bottomDivRef = useRef<HTMLDivElement>(null);
 
-  const getProgressLineWidth = (selectedDate: string) => {
-    const now = new Date(); // Current date and time
-    console.log(now, "NOW");
+  const getProgressLineWidth = (selectedDate: number) => {
+    if (typeof selectedDate !== "number") return "0%";
 
-    const selected = new Date(selectedDate); // Convert selectedDate to Date object
-    console.log(selectedDate, "SELECTED DATE");
+    const now = new Date(); // Current time
+    const selected = new Date(+selectedDate * 1000); // Convert Unix timestamp to milliseconds
 
     // Create a separate date object for today at midnight
     const todayStart = new Date();
@@ -34,7 +33,7 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
       return "100%";
     }
 
-    // If the selected date is today, calculate the progress line width
+    // Get the current time
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
 
@@ -106,7 +105,7 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
 
 
           <div
-            style={{ width: getProgressLineWidth(selectedDate!) }}
+            style={{ width: getProgressLineWidth(+selectedDate!) }}
             ref={timelineRef}
             className="h-18 w-full absolute top-[-5px] cursor-pointer py-5"
             onMouseMove={handleMouseMove}
