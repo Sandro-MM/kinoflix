@@ -78,6 +78,7 @@
     "slugify": "^1.6.5",
     "swagger-ui-react": "^4.15",
     "tus-js-client": "^3.0.1",
+    "uninstall": "^0.0.0",
     "url-regex": "^5.0.0",
     "use-debounce": "^9.0.4",
     "use-immer": "^0.9.0",
