@@ -24,6 +24,6 @@
     "jsx": "react-jsx",
 
   },
-  "include": ["resources/client", "common/foundation/resources/client"],
+  "include": ["resources/client", "common/foundation/resources/client","resources/client/**/*", "types/**/*"],
   "references": [{"path": "./tsconfig.node.json"}]
 }
