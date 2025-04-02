@@ -426,8 +426,7 @@ const DialogTriggerItem = ({
   </DialogTrigger>
 );
 
-export const VideoPlayerLiveTV = ({
-                                    keyItem,
+export const VideoPlayerLiveTV = ({keyItem,
   stream,
   enableControls,
   vastUrl,
