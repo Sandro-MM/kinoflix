@@ -16,7 +16,7 @@ import {useNavigate} from '@common/ui/navigation/use-navigate';
 import {isSameMedia} from '@common/player/utils/is-same-media';
 import {Trans} from '@ui/i18n/trans';
 import {EpisodeSelector} from '@app/videos/watch-page/episode-selector';
-import {VASTClient, VASTParser,VASTTracker} from 'vast-client';
+import {VASTClient, VASTParser,VASTTracker} from '@dailymotion/vast-client';
 
 
 

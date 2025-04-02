@@ -41,7 +41,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
     rollupOptions: {
-      external: ['puppeteer','vast-client'],
+      external: ['puppeteer'],
     },
   },
   plugins: [
