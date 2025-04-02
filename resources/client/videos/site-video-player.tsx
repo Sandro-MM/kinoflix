@@ -16,6 +16,11 @@ import {useNavigate} from '@common/ui/navigation/use-navigate';
 import {isSameMedia} from '@common/player/utils/is-same-media';
 import {Trans} from '@ui/i18n/trans';
 import {EpisodeSelector} from '@app/videos/watch-page/episode-selector';
+//@ts-ignore
+import {VASTClient, VASTParser,VASTTracker} from '@dailymotion/vast-client';
+
+
+
 
 interface Props {
   video: Video;
@@ -109,13 +114,109 @@ function NativeVideoPlayer({
   autoPlay,
   logPlays,
   showEpisodeSelector,
-  enableControls
+  enableControls,
+  vastUrl
 }: Props) {
   const playerRef = useRef<PlayerActions>(null!);
   const logVideoPlay = useLogVideoPlay(playerRef, {enabled: logPlays});
   const mediaItem = videoToMediaItem(video, mediaItemId);
   const related = relatedVideos?.map(v => videoToMediaItem(v)) ?? [];
   const navigate = useNavigate();
+  const videoRef = useRef(null);
+  const [adMediaUrl, setAdMediaUrl] = useState<any>(null);
+  const [vastTracker, setVastTracker] = useState<any>(null);
+
+
+  console.log()
+
+  useEffect(() => {
+    async function fetchVAST() {
+      if (!vastUrl) return;
+      const vastClient = new VASTClient();
+      try {
+        const response = await vastClient.get(vastUrl);
+        if (response){
+          console.log(response)
+          const validAd = response.ads.find((ad:any) => ad?.creatives?.length > 0);
+          if (!validAd) return;
+          console.log(validAd,'validAdvalidAd');
+          const creative = validAd.creatives.find((c:any) => c?.mediaFiles);
+          console.log(creative,'creativecreativecreative');
+          const mediaFileUrl = creative?.mediaFiles?.find((mf:any) => mf.fileURL)?.fileURL;
+          console.log(mediaFileUrl,'mediaFileUrlmediaFileUrl');
+          if (mediaFileUrl) {
+            console.log(mediaFileUrl,'mediaFileUrlmediaFileUrl')
+            setAdMediaUrl(mediaFileUrl);
+            const tracker = new VASTTracker(vastClient, validAd, creative);
+            setVastTracker(tracker);
+            tracker.trackImpression();
+          } else {
+            setAdMediaUrl(false)
+          }
+        }
+
+
+
+      } catch (error) {
+        console.error("Error fetching VAST:", error);
+      }
+    }
+    fetchVAST();
+  }, [vastUrl]);
+
+
+  useEffect(() => {
+    if (!videoRef.current || !vastTracker) return;
+
+    const videoEl:any = videoRef.current;
+
+    const handlePlay = () => {
+      vastTracker.setPaused(false);
+
+    };
+
+    const handlePause = () => {
+      vastTracker.setPaused(true);
+
+    };
+
+    const handleTimeUpdate = () => {
+      vastTracker.setProgress(videoEl.currentTime);
+    };
+
+    const handleEnded = () => {
+      vastTracker.complete();
+      setAdMediaUrl(null);
+    };
+
+    const handleClickThrough = () => {
+      if (vastTracker.clickThroughURLTemplate) {
+        console.log(vastTracker.clickThroughURLTemplate,'vastTracker.clickThroughURLTemplatevastTracker.clickThroughURLTemplate')
+        vastTracker.click();
+        window.open(vastTracker.clickThroughURLTemplate.url, '_blank');
+      }
+    };
+
+    videoEl.addEventListener("play", handlePlay);
+    videoEl.addEventListener("pause", handlePause);
+    videoEl.addEventListener("timeupdate", handleTimeUpdate);
+    videoEl.addEventListener("ended", handleEnded);
+    videoEl.addEventListener("click", handleClickThrough);
+
+    return () => {
+      videoEl.removeEventListener("play", handlePlay);
+      videoEl.removeEventListener("pause", handlePause);
+      videoEl.removeEventListener("timeupdate", handleTimeUpdate);
+      videoEl.removeEventListener("ended", handleEnded);
+      videoEl.removeEventListener("click", handleClickThrough);
+    };
+  }, [vastTracker]);
+
+
+
+
+
+
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -130,40 +231,50 @@ function NativeVideoPlayer({
   }, [logVideoPlay]);
 
   return (
-    <VideoPlayer
-      enableControls={enableControls}
-      apiRef={playerRef}
-      id="player"
-      queue={[mediaItem, ...related]}
-      autoPlay={autoPlay}
-      onBeforePlayNext={nextMedia => {
-        if (nextMedia && !isSameMedia(mediaItem, nextMedia)) {
-          navigate(getWatchLink(nextMedia.meta));
-        }
-        return true;
-      }}
-      onDestroy={() => logVideoPlay()}
-      listeners={{
-        playbackEnd: () => logVideoPlay(),
-        beforeCued: ({previous}) => {
-          // only log when cueing from previous video and not when cueing initial one
-          if (previous) {
-            logVideoPlay();
+    <>
+
+      {adMediaUrl ?
+        <video ref={videoRef} controls autoPlay>
+          <source src={adMediaUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        :
+        <VideoPlayer
+          enableControls={enableControls}
+          apiRef={playerRef}
+          id="player"
+          queue={[mediaItem, ...related]}
+          autoPlay={autoPlay}
+          onBeforePlayNext={nextMedia => {
+            if (nextMedia && !isSameMedia(mediaItem, nextMedia)) {
+              navigate(getWatchLink(nextMedia.meta));
+            }
+            return true;
+          }}
+          onDestroy={() => logVideoPlay()}
+          listeners={{
+            playbackEnd: () => logVideoPlay(),
+            beforeCued: ({previous}) => {
+              // only log when cueing from previous video and not when cueing initial one
+              if (previous) {
+                logVideoPlay();
+              }
+            },
+          }}
+          rightActions={
+            showEpisodeSelector && title && episode ? (
+              <EpisodeSelector
+                title={title}
+                currentEpisode={episode}
+                onSelected={episode => {
+                  navigate(getWatchLink(episode.primary_video));
+                }}
+              />
+            ) : undefined
           }
-        },
-      }}
-      rightActions={
-        showEpisodeSelector && title && episode ? (
-          <EpisodeSelector
-            title={title}
-            currentEpisode={episode}
-            onSelected={episode => {
-              navigate(getWatchLink(episode.primary_video));
-            }}
-          />
-        ) : undefined
+        />
       }
-    />
+  </>
   );
 }
 

@@ -191,7 +191,7 @@ export function LiveTv() {
       {selectedVideo && (
         <VideoPlayerLiveTV
           vastUrl={selectedChannel?.vast.url}
-          key={selectedVideo}
+          keyItem={selectedVideo}
           stream={selectedVideo}
         />
       )}
@@ -329,7 +329,7 @@ export const ChannelsSelectDesktop: React.FC<ChannelsSelectProps> = ({
             label={
               <div>
                 <VideoPlayerLiveTV
-                  key={channel?.id}
+                  keyItem={channel?.id}
                   stream={`${channel?.stream}?quality=low`}
                   enableControls={false}
                 />
@@ -427,19 +427,19 @@ const DialogTriggerItem = ({
 );
 
 export const VideoPlayerLiveTV = ({
-  key,
+                                    keyItem,
   stream,
   enableControls,
   vastUrl,
 }: {
-  key: string;
+  keyItem: string;
   stream: string;
   enableControls?: boolean;
   vastUrl?: string;
 }) => (
   <SiteVideoPlayer
     enableControls={enableControls}
-    key={key}
+    key={keyItem}
     vastUrl={vastUrl}
     autoPlay={true}
     video={{
