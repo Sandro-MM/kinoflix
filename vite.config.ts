@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react-swc';
 import laravel from 'laravel-vite-plugin';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import replace from '@rollup/plugin-replace';
+import * as path from 'path';
 
 // override laravel plugin base option (from absolute to relative to html base tag)
 function basePath(): Plugin {
@@ -27,6 +28,12 @@ export default defineConfig({
   base: '',
   resolve: {
     preserveSymlinks: true,
+    alias: {
+      '@ui': path.resolve(__dirname, './common/foundation/resources/client/ui/library'),
+      '@common': path.resolve(__dirname, './common/foundation/resources/client'),
+      '@app': path.resolve(__dirname, './resources/client'),
+    },
+
   },
   optimizeDeps: {
     force: true
