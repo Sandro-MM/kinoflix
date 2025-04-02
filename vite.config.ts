@@ -35,9 +35,6 @@ export default defineConfig({
     },
 
   },
-  optimizeDeps: {
-    force: true
-  },
   build: {
     sourcemap: true,
     rollupOptions: {
