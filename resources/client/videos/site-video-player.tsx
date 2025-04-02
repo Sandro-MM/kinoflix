@@ -17,7 +17,7 @@ import {isSameMedia} from '@common/player/utils/is-same-media';
 import {Trans} from '@ui/i18n/trans';
 import {EpisodeSelector} from '@app/videos/watch-page/episode-selector';
 //@ts-ignore
-import {VASTClient, VASTParser,VASTTracker} from '@dailymotion/vast-client';
+import {VASTClient, VASTParser,VASTTracker} from 'vast-client';
 
 
 
@@ -123,8 +123,12 @@ function NativeVideoPlayer({
   const related = relatedVideos?.map(v => videoToMediaItem(v)) ?? [];
   const navigate = useNavigate();
   const videoRef = useRef(null);
-  const [adMediaUrl, setAdMediaUrl] = useState<any>(null);
+  const [adMediaUrl, setAdMediaUrl] = useState<string | null>(null);
   const [vastTracker, setVastTracker] = useState<any>(null);
+  const [skipTime, setSkipTime] = useState<number>(0);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [canSkip, setCanSkip] = useState<boolean>(false);
+
 
 
   console.log()
@@ -134,15 +138,19 @@ function NativeVideoPlayer({
       if (!vastUrl) return;
       const vastClient = new VASTClient();
       try {
-        const response = await vastClient.get(vastUrl);
+        const response = await vastClient.get('https://statics.dmcdn.net/h/html/vast/simple-inline.xml');
         if (response){
           console.log(response)
           const validAd = response.ads.find((ad:any) => ad?.creatives?.length > 0);
           if (!validAd) return;
           console.log(validAd,'validAdvalidAd');
-          const creative = validAd.creatives.find((c:any) => c?.mediaFiles);
+          const creative:any = validAd.creatives.find((c:any) => c?.mediaFiles);
           console.log(creative,'creativecreativecreative');
           const mediaFileUrl = creative?.mediaFiles?.find((mf:any) => mf.fileURL)?.fileURL;
+          const mediaFileSkipDelay = creative?.skipDelay;
+          setSkipTime(mediaFileSkipDelay)
+
+          console.log(mediaFileSkipDelay,'mediaFileSkipDelay');
           console.log(mediaFileUrl,'mediaFileUrlmediaFileUrl');
           if (mediaFileUrl) {
             console.log(mediaFileUrl,'mediaFileUrlmediaFileUrl')
@@ -150,8 +158,10 @@ function NativeVideoPlayer({
             const tracker = new VASTTracker(vastClient, validAd, creative);
             setVastTracker(tracker);
             tracker.trackImpression();
+
+
           } else {
-            setAdMediaUrl(false)
+            setAdMediaUrl(null)
           }
         }
 
@@ -168,7 +178,11 @@ function NativeVideoPlayer({
   useEffect(() => {
     if (!videoRef.current || !vastTracker) return;
 
-    const videoEl:any = videoRef.current;
+    const videoEl: any = videoRef.current;
+
+    vastTracker.on('loaded', (i: any) => {
+      console.log(i, 'loaded')
+    })
 
     const handlePlay = () => {
       vastTracker.setPaused(false);
@@ -180,9 +194,18 @@ function NativeVideoPlayer({
 
     };
 
-    const handleTimeUpdate = () => {
+    vastTracker.track('skip');
+
+    const handleTimeUpdate = (i:any) => {
+      setTimeLeft(skipTime - videoEl.currentTime)
+      if (videoEl.currentTime >= skipTime) {
+        setCanSkip(true);
+      }
       vastTracker.setProgress(videoEl.currentTime);
     };
+
+    videoEl.addEventListener('timeupdate', handleTimeUpdate);
+
 
     const handleEnded = () => {
       vastTracker.complete();
@@ -202,20 +225,29 @@ function NativeVideoPlayer({
     videoEl.addEventListener("timeupdate", handleTimeUpdate);
     videoEl.addEventListener("ended", handleEnded);
     videoEl.addEventListener("click", handleClickThrough);
-
+    videoEl.addEventListener("skip", handleSkip);
     return () => {
       videoEl.removeEventListener("play", handlePlay);
       videoEl.removeEventListener("pause", handlePause);
       videoEl.removeEventListener("timeupdate", handleTimeUpdate);
       videoEl.removeEventListener("ended", handleEnded);
       videoEl.removeEventListener("click", handleClickThrough);
+      videoEl.removeEventListener("skip", handleSkip);
     };
-  }, [vastTracker]);
+  }, [vastTracker,skipTime]);
 
 
 
 
-
+  const handleSkip = () => {
+    if (vastTracker) {
+      vastTracker.track('skip');
+      vastTracker.skip();
+      vastTracker.complete();
+    }
+    setAdMediaUrl(null);
+    setCanSkip(false);
+  };
 
 
   useEffect(() => {
@@ -234,10 +266,33 @@ function NativeVideoPlayer({
     <>
 
       {adMediaUrl ?
-        <video ref={videoRef} controls autoPlay>
-          <source src={adMediaUrl} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <div className={'w-full h-full bg-twitter flex justify-center items-center relative'}>
+          <div className={'w-full h-max relative'}>
+            <video className={'w-full'} ref={videoRef} controls={false} autoPlay>
+              <source src={adMediaUrl} type="video/mp4" />
+            </video>
+
+              <button
+                disabled={!canSkip}
+                onClick={handleSkip}
+                style={{
+                  position: 'absolute',
+                  bottom: 10,
+                  right: 10,
+                  background: 'rgba(0,0,0,0.7)',
+                  color: '#fff',
+                  padding: '8px 12px',
+                  borderRadius: '4px',
+                  cursor: canSkip?'pointer':'default',
+                  border: 'none',
+                }}
+              >
+                {timeLeft > 0 ? timeLeft.toFixed(0) : 'Skip Ad'}
+
+              </button>
+
+          </div>
+        </div>
         :
         <VideoPlayer
           enableControls={enableControls}
