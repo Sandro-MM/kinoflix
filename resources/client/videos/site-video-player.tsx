@@ -126,7 +126,7 @@ function NativeVideoPlayer({
   const [adMediaUrl, setAdMediaUrl] = useState<string | null>(null);
   const [vastTracker, setVastTracker] = useState<any>(null);
   const [skipTime, setSkipTime] = useState<number>(0);
-  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [canSkip, setCanSkip] = useState<boolean>(false);
 
 
@@ -271,26 +271,25 @@ function NativeVideoPlayer({
             <video className={'w-full'} ref={videoRef} controls={false} autoPlay>
               <source src={adMediaUrl} type="video/mp4" />
             </video>
+            { timeLeft && <button
+              disabled={!canSkip}
+              onClick={handleSkip}
+              style={{
+                position: 'absolute',
+                bottom: 10,
+                right: 10,
+                background: 'rgba(0,0,0,0.7)',
+                color: '#fff',
+                padding: '8px 12px',
+                borderRadius: '4px',
+                cursor: canSkip?'pointer':'default',
+                border: 'none',
+              }}
+            >
+              {timeLeft > 0 ? timeLeft.toFixed(0) : 'Skip Ad'}
 
-              <button
-                disabled={!canSkip}
-                onClick={handleSkip}
-                style={{
-                  position: 'absolute',
-                  bottom: 10,
-                  right: 10,
-                  background: 'rgba(0,0,0,0.7)',
-                  color: '#fff',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  cursor: canSkip?'pointer':'default',
-                  border: 'none',
-                }}
-              >
-                {timeLeft > 0 ? timeLeft.toFixed(0) : 'Skip Ad'}
-
-              </button>
-
+            </button>
+            }
           </div>
         </div>
         :
