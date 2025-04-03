@@ -85,7 +85,7 @@ export function Navbar(props: NavbarProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled((prev) => window.scrollY > 80);
+      setScrolled((prev) => window.scrollY > 40);
     };
 
     window.addEventListener("scroll", handleScroll);

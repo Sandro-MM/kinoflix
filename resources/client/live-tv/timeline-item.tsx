@@ -52,7 +52,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
     const startMinutes = date.getUTCMinutes(); // Extract MM
 
     const totalHours = startHour + startMinutes / 60; // Convert to fractional hours
-    const adjustedHour = (totalHours - 6 + 24) % 24; // Shift so 06:00 is 0%
+    const adjustedHour = (totalHours - 6.09 + 24) % 24; // Shift so 06:00 is 0%
 
     return `${(adjustedHour * (100 / 24)).toFixed(4)}%`; // Convert to percentage
   };
@@ -74,7 +74,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
       <div
         onClick={() => setSelectedProgram(program)}
         className={`
-        absolute top-[-4px] z-10 h-14 w-14 cursor-pointer rounded-full border-2 border-solid border-bg
+        absolute top-[-4px] z-10 size-14 cursor-pointer rounded-full border-2 border-solid border-bg
         ${selectedProgram === program ? "bg-primary" : "bg-chip"}
       `}
         style={{ left: getProgramPosition(program.start) }}

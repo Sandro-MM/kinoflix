@@ -59,16 +59,20 @@ export const PastDatesList = ({ days, selectedDay, setSelectedDay }: PastDatesLi
 // Function to generate past dates
 const getPastDates = (days: number): DateItem[] => {
   const result: DateItem[] = [];
+  const today = new Date();
 
   for (let i = 0; i < days; i++) {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
 
     result.push({
       day: date.toLocaleDateString("en-GB", { day: "2-digit" }),
       month: date.toLocaleDateString("en-GB", { month: "long" }),
       weekday: date.toLocaleDateString("en-GB", { weekday: "short" }),
-      fullDate: date.toISOString().split("T")[0], // "YYYY-MM-DD" format
+      fullDate: [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0'),
+      ].join('-'),
     });
   }
 

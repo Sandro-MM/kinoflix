@@ -15,39 +15,45 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
   const [hoverPercent, setHoverPercent] = useState<number | null>(null);
   const bottomDivRef = useRef<HTMLDivElement>(null);
 
-  const getProgressLineWidth = (selectedDate: number) => {
-    if (typeof selectedDate !== "number") return "0%";
+  const getProgressLineWidth = (selectedDate: string) => {
+    console.log(selectedDate)
+    const now = new Date();
 
-    const now = new Date(); // Current time
-    const selected = new Date(+selectedDate * 1000); // Convert Unix timestamp to milliseconds
+    // Parse ISO date (safe way):
+    const utcDate = new Date(selectedDate + "T00:00:00Z"); // force UTC midnight
 
-    // Create a separate date object for today at midnight
+    // Convert explicitly to local midnight:
+    const selected = new Date(
+      utcDate.getUTCFullYear(),
+      utcDate.getUTCMonth(),
+      utcDate.getUTCDate()
+    );
+
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
-    // Reset selected date's time for comparison
-    selected.setHours(0, 0, 0, 0);
+    console.log("Selected date (local midnight):", selected.toString());
+    console.log("Today start (local midnight):", todayStart.toString());
 
-    // If the selected date is in the past, return 100% width
-    if (selected < todayStart) {
+    if (selected.getTime() < todayStart.getTime()) {
+      console.log("Selected date is in the past. Returning 100%.");
       return "100%";
+    } else if (selected.getTime() > todayStart.getTime()) {
+      console.log("Selected date is in the future. Returning 0%.");
+      return "0%";
     }
 
-    // Get the current time
+    // Today's progress:
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
-
-    // Convert the current time into fractional hours (e.g., 14:30 → 14.5)
     const totalCurrentTimeInHours = currentHour + currentMinutes / 60;
 
-    // Adjust the time to start from 06:00
-    const adjustedTime = (totalCurrentTimeInHours - 6 + 24) % 24;
-
-    // Calculate the percentage of the timeline (out of 24 hours)
-    const percentage = (adjustedTime * (100 / 24)).toFixed(4);
+    const adjustedTime = Math.max(0, totalCurrentTimeInHours - 6);
+    const percentage = Math.min((adjustedTime / 18) * 100, 100).toFixed(4); // from 6 AM to midnight
 
     return `${percentage}%`;
   };
+
 
 
 
@@ -105,7 +111,7 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
 
 
           <div
-            style={{ width: getProgressLineWidth(+selectedDate!) }}
+            style={{ width: getProgressLineWidth(selectedDate?.toString()!) }}
             ref={timelineRef}
             className="h-18 w-full absolute top-[-5px] cursor-pointer py-5"
             onMouseMove={handleMouseMove}

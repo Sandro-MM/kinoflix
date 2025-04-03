@@ -137,7 +137,7 @@ function NativeVideoPlayer({
       if (!vastUrl) return;
       const vastClient = new VASTClient();
       try {
-        const response = await vastClient.get(vastUrl);
+        const response = await vastClient.get('https://statics.dmcdn.net/h/html/vast/simple-inline.xml');
         if (response){
           console.log(response)
           const validAd = response.ads.find((ad:any) => ad?.creatives?.length > 0);
@@ -265,32 +265,49 @@ function NativeVideoPlayer({
     <>
 
       {adMediaUrl ?
-        <div className={'w-full h-full bg-twitter flex justify-center items-center relative'}>
-          <div className={'w-full h-max relative'}>
-            <video className={'w-full'} ref={videoRef} controls={false} autoPlay>
-              <source src={adMediaUrl} type="video/mp4" />
-            </video>
-            { timeLeft && <button
-              disabled={!canSkip}
-              onClick={handleSkip}
+        <div className="w-full h-full bg-twitter flex justify-center items-center relative">
+          <div className="w-full h-full relative flex justify-center items-center">
+            <video
+              ref={videoRef}
+              controls={false}
+              autoPlay
+              className="object-contain"
               style={{
-                position: 'absolute',
-                bottom: 10,
-                right: 10,
-                background: 'rgba(0,0,0,0.7)',
-                color: '#fff',
-                padding: '8px 12px',
-                borderRadius: '4px',
-                cursor: canSkip?'pointer':'default',
-                border: 'none',
+                width: '100%',
+                height: '100%',
+                maxWidth: '100vw',
+                maxHeight: '100vh',
               }}
             >
-              {timeLeft > 0 ? timeLeft.toFixed(0) : 'Skip Ad'}
+              <source src={adMediaUrl} type="video/mp4" />
+            </video>
 
-            </button>
-            }
+            {timeLeft !== null && (
+              <button
+                disabled={!canSkip}
+                onClick={handleSkip}
+                className={'flex items-center justify-center gap-14 absolute bottom-16 right-16 px-22 py-12 rounded bg-background'}
+                style={{
+                  cursor: canSkip ? 'pointer' : 'default',
+                  border: 'none',
+                }}
+              >
+                {timeLeft > 0 ? `Skip in ${timeLeft.toFixed(0)}` : 'Skip Ad'}
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 9 10"
+                  width="9"
+                  height="10"
+                  className="svg-icon--step-forward svg-icon"
+                >
+                  <path d="M0 0v10l7-5-7-5zm7 0h2v10H7V0z"></path>
+                </svg>
+              </button>
+            )}
           </div>
         </div>
+
         :
         <VideoPlayer
           enableControls={enableControls}

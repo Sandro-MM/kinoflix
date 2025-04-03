@@ -171,14 +171,14 @@ export function LiveTv() {
     <>
       <div
         className={
-          'flex max-h-[calc(100vh-262px)] w-[260px] min-w-[260px] max-w-[260px] flex-col overflow-y-scroll'
+          'flex max-h-[calc(100vh-262px)] w-[260px] min-w-[260px] max-w-[260px] flex-col overflow-y-scroll overflow-x-hidden'
         }
       >
         {channelSelectDesktop}
       </div>
       <div
         className={
-          'flex max-h-[calc(100vh-262px)] !w-[300px] !min-w-[300px] !max-w-[300px] flex-col overflow-y-scroll'
+          'flex max-h-[calc(100vh-262px)] !w-[300px] !min-w-[300px] !max-w-[300px] flex-col overflow-y-scroll overflow-x-hidden'
         }
       >
         {programSelect}
@@ -206,7 +206,7 @@ export function LiveTv() {
             className={'flex h-[48px] w-max items-center justify-start gap-10'}
           >
             <img
-              className={'size-24'}
+              className={'max-h-26 w-auto'}
               src={selectedChannel?.cover}
               alt={selectedChannel?.name?.en}
             />
@@ -230,10 +230,11 @@ export function LiveTv() {
     </>
   );
 
-  return (
+  if (selectedVideo) return (
     <Fragment>
       <DefaultMetaTags />
       <MainNavbar />
+      <div className={'mt-22 overflow-x-hidden'}>
       <div className={'flex pt-60 md:ml-54'}>
         {DesktopSelectMenu}
         <div className={'max-h-[calc(100vh-262px)] w-full'}>
@@ -261,7 +262,7 @@ export function LiveTv() {
         )}
       </div>
       {width <= 1024 && mobileSelectMenu}
-      <div></div>
+      </div>
       <Footer className="landing-container" />
     </Fragment>
   );
@@ -302,7 +303,7 @@ export const ChannelsSelect: React.FC<ChannelsSelectProps> = ({
               }
             >
               <img
-                className={'size-30'}
+                className={'max-h-26 w-auto'}
                 src={channel?.cover}
                 alt={channel?.name?.en}
               />
@@ -350,7 +351,7 @@ export const ChannelsSelectDesktop: React.FC<ChannelsSelectProps> = ({
                 }
               >
                 <img
-                  className={'size-30'}
+                  className={'max-h-26 w-auto'}
                   src={channel?.cover}
                   alt={channel?.name?.en}
                 />
@@ -379,7 +380,7 @@ export const ProgramSelect: React.FC<ProgramSelectProps> = ({
       {programs &&
         programs.map((program, index) => (
           <Button
-            variant={'outline'}
+            variant={selectedProgram === program ? 'raised' : 'outline'}
             color={selectedProgram === program ? 'primary' : 'chip'}
             radius={'rounded-[0px]'}
             className="m-0 h-max min-h-38 w-full min-w-[290px] !justify-start text-wrap !p-12 !text-left lg:w-[290px] lg:max-w-[290px]"
