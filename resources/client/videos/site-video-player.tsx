@@ -137,7 +137,8 @@ function NativeVideoPlayer({
       if (!vastUrl) return;
       const vastClient = new VASTClient();
       try {
-        const response = await vastClient.get('https://statics.dmcdn.net/h/html/vast/simple-inline.xml');
+        // 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml'
+        const response = await vastClient.get(vastUrl);
         if (response){
           console.log(response)
           const validAd = response.ads.find((ad:any) => ad?.creatives?.length > 0);

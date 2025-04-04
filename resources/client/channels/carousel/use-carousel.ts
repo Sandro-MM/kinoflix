@@ -85,6 +85,10 @@ export function useCarousel({rotate = false}: Options = {}) {
     }
   }, [rotate]);
 
+  const selectItem = useCallback((index: number) => {
+    scrollToIndex(index);
+  }, [scrollToIndex]);
+
   const scrollToNextPage = useCallback(() => {
     if (scrollContainerRef.current) {
       const pageWidth = scrollContainerRef.current.clientWidth;
@@ -108,5 +112,6 @@ export function useCarousel({rotate = false}: Options = {}) {
     activePage,
     containerClassName,
     itemClassName,
+    selectItem
   };
 }

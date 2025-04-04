@@ -13,6 +13,11 @@
   );
 }
 
+.no-drag-transform {
+  transform: none !important;
+  will-change: auto !important;
+}
+
 .landing-container {
   @apply px-24 mx-auto relative;
 }

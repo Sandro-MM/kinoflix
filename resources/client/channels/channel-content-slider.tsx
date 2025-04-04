@@ -1,5 +1,5 @@
 import {ChannelContentProps} from '@app/channels/channel-content';
-import React, {Fragment, useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useRef, useState} from 'react';
 import {useCarousel} from '@app/channels/carousel/use-carousel';
 import {Title} from '@app/titles/models/title';
 import {TitleRating} from '@app/reviews/title-rating';
@@ -13,13 +13,14 @@ import {IconButton} from '@ui/buttons/icon-button';
 import {ChevronLeftIcon} from '@ui/icons/material/ChevronLeft';
 import {ChevronRightIcon} from '@ui/icons/material/ChevronRight';
 import {ChannelHeader} from '@app/channels/channel-header/channel-header';
-import {AnimatePresence, m} from 'framer-motion';
+import {AnimatePresence, motion as m, useDragControls} from 'framer-motion';
 import {Link} from 'react-router';
 import {getWatchLink} from '@app/videos/watch-page/get-watch-link';
 import {useChannelContent} from '@common/channels/requests/use-channel-content';
 import {Channel, ChannelContentItem} from '@common/channels/channel';
 import {FormattedDate} from '@ui/i18n/formatted-date';
 import {useTrans} from '@ui/i18n/use-trans';
+
 
 export function ChannelContentSlider({
   channel,
@@ -32,6 +33,7 @@ export function ChannelContentSlider({
     canScrollForward,
     scrollToNextPage,
     scrollToPreviousPage,
+    selectItem
   } = useCarousel({rotate: true});
   const {data: pagination} =
     useChannelContent<ChannelContentItem<Title>>(channel);
@@ -68,7 +70,7 @@ export function ChannelContentSlider({
                 </IconButton>
               </div>
               <div className={'w-[calc(100%-120px)]'}>
-                <UpNext titles={pagination?.data ?? []} activePage={activePage} />
+                <UpNext selectItem={selectItem} scrollToNextPage={scrollToNextPage}  scrollToPreviousPage={scrollToPreviousPage} titles={pagination?.data ?? []} activePage={activePage} />
               </div>
               <div className="hidden md:block">
                 <IconButton
@@ -172,9 +174,19 @@ function Slide({item, index}: SlideProps) {
 interface UpNextProps {
   titles: Title[];
   activePage: number;
+  scrollToNextPage:any
+  scrollToPreviousPage:any
+  selectItem: any
 }
-function UpNext({titles, activePage}: UpNextProps) {
+function UpNext({titles, activePage,scrollToNextPage,
+                  scrollToPreviousPage, selectItem}: UpNextProps) {
+
   const [itemsVisible, setItemsVisible] = useState(getItemsVisible());
+  const dragThreshold = 200; // minimum px for swipe to trigger
+  const dragStartX = useRef(0);
+  const lastScrollX = useRef(0)
+  const cooldownRef = useRef(false);
+  const dragControls = useDragControls();
 
   useEffect(() => {
     function handleResize() {
@@ -190,7 +202,7 @@ function UpNext({titles, activePage}: UpNextProps) {
   }
 
   const itemCount = titles.length;
-  const start = activePage + 1;
+  const start = activePage;
   const end = start + itemsVisible;
   const items = titles.slice(start, end);
   if (end > itemCount) {
@@ -199,13 +211,34 @@ function UpNext({titles, activePage}: UpNextProps) {
 
   return (
     <AnimatePresence initial={false} mode="wait">
-      <div className="w-full flex-shrink-0 max-md:hidden px-16">
+      <m.div
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        style={{ x: 0}}
+        className="w-full flex-shrink-0 max-md:hidden px-16 cursor-grab active:cursor-grabbing no-drag-transform"
+        onDragStart={(e, info) => {
+          dragStartX.current = info.point.x;
+          lastScrollX.current = info.point.x;
+        }}
+        onDrag={(e, info) => {
+          const deltaX = info.point.x - lastScrollX.current;
+          if (Math.abs(deltaX) >= dragThreshold) {
+            if (deltaX < 0) {
+              scrollToNextPage();
+            } else {
+              scrollToPreviousPage();
+            }
+            lastScrollX.current = info.point.x;
+          }
+        }}
+      >
         {/*<div className="mb-12 text-lg font-semibold">*/}
         {/*  <Trans message="Up next" />*/}
         {/*</div>*/}
-        <div className="flex flex-row gap-16 justify-center relative">
-          {items.map(item => (
+        <div className="flex flex-row gap-16 justify-center relative active:cursor-grabbing">
+          {items.map((item, index) => (
             <m.div
+              onClick={() => selectItem((activePage + index) % titles.length)}
               key={item.id}
               className="relative  flex-auto max-w-[300px]"
               initial={{opacity: 0}}
@@ -215,10 +248,12 @@ function UpNext({titles, activePage}: UpNextProps) {
             >
               <TitleBackdrop
                 title={item}
-                className="mb-6 rounded"
+                className={`mb-6 rounded ${
+                  index === 0 ? 'border border-solid border-primary' : ''
+                }`}
                 size="w-full max-h-[220px]"
                 srcSize="md"
-                wrapWithLink
+
 
               />
               <div className={'absolute top-0 left-0 w-full h-50  rounded-[3px]'}
@@ -248,7 +283,7 @@ function UpNext({titles, activePage}: UpNextProps) {
             </m.div>
           ))}
         </div>
-      </div>
+      </m.div>
     </AnimatePresence>
   );
 }
