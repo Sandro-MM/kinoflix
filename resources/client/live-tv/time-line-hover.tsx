@@ -15,44 +15,31 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
   const [hoverPercent, setHoverPercent] = useState<number | null>(null);
   const bottomDivRef = useRef<HTMLDivElement>(null);
 
-  const getProgressLineWidth = (selectedDate: string) => {
-    console.log(selectedDate)
+  const getProgressLineWidth = (selectedDate: string): string => {
     const now = new Date();
+    const currentTime = now.getTime();
 
-    // Parse ISO date (safe way):
-    const utcDate = new Date(selectedDate + "T00:00:00Z"); // force UTC midnight
+    const selected = new Date(selectedDate);
+    selected.setHours(6, 0, 0, 0); // 6:00 AM on selected date
 
-    // Convert explicitly to local midnight:
-    const selected = new Date(
-      utcDate.getUTCFullYear(),
-      utcDate.getUTCMonth(),
-      utcDate.getUTCDate()
-    );
+    const timelineStart = selected.getTime();
+    const timelineEnd = timelineStart + 24 * 60 * 60 * 1000; // +24 hours (6:00 AM next day)
 
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-
-    console.log("Selected date (local midnight):", selected.toString());
-    console.log("Today start (local midnight):", todayStart.toString());
-
-    if (selected.getTime() < todayStart.getTime()) {
-      console.log("Selected date is in the past. Returning 100%.");
-      return "100%";
-    } else if (selected.getTime() > todayStart.getTime()) {
-      console.log("Selected date is in the future. Returning 0%.");
-      return "0%";
+    if (currentTime < timelineStart) {
+      return "0%"; // Before the timeline starts
     }
 
-    // Today's progress:
-    const currentHour = now.getHours();
-    const currentMinutes = now.getMinutes();
-    const totalCurrentTimeInHours = currentHour + currentMinutes / 60;
+    if (currentTime >= timelineEnd) {
+      return "100%"; // After the timeline ends
+    }
 
-    const adjustedTime = Math.max(0, totalCurrentTimeInHours - 6);
-    const percentage = Math.min((adjustedTime / 18) * 100, 100).toFixed(4); // from 6 AM to midnight
+    const elapsed = currentTime - timelineStart;
+    const percentage = (elapsed / (24 * 60 * 60 * 1000)) * 100;
 
-    return `${percentage}%`;
+    return `${percentage.toFixed(2)}%`;
   };
+
+
 
 
 
@@ -66,28 +53,23 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
     const timelineRect = timelineRef.current.getBoundingClientRect();
     const bottomRect = bottomDivRef.current.getBoundingClientRect();
 
-    // Calculate how much of the full width the timeline div covers
     const timelineWidthRatio = timelineRect.width / bottomRect.width;
-    const maxSelectableHours = timelineWidthRatio * 24; // Max hours range from 6:00 AM
+    const maxSelectableHours = timelineWidthRatio * 24;
 
-    // Calculate hover percentage within the *timeline div* (not the full width)
     const percent = ((e.clientX - timelineRect.left) / timelineRect.width) * 100;
     const clampedPercent = Math.max(0, Math.min(100, percent));
 
     const baseTime = new Date();
-    baseTime.setHours(6, 0, 0, 0); // Start at 6:00 AM
+    baseTime.setHours(6, 0, 0, 0); // Start of timeline (6:00 AM today)
 
-    // Compute the hovered time but clamp it within the timeline's allowed range
     const hoveredMilliseconds = (clampedPercent / 100) * (maxSelectableHours * 60 * 60 * 1000);
     const selectedTime = new Date(baseTime.getTime() + hoveredMilliseconds);
 
-    const hours = selectedTime.getHours().toString().padStart(2, "0");
-    const minutes = selectedTime.getMinutes().toString().padStart(2, "0");
+    const hoveredTimestamp = Math.floor(selectedTime.getTime() / 1000); // Unix time (in seconds)
 
     setHoverPercent(clampedPercent);
-    setHoveredTime(`${hours}:${minutes}`);
+    setHoveredTime(hoveredTimestamp); // Set as Unix timestamp
   };
-
 
 
   // Mouse leave handler
@@ -101,6 +83,13 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
     if (hoveredTime) {
       onTimeSelect(hoveredTime);
     }
+  };
+
+  const converter = (timestamp: number): string => {
+    const date = new Date(timestamp * 1000); // convert to milliseconds
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${hours}:${minutes}`;
   };
 
   return (
@@ -121,7 +110,7 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
             <div className={'w-full bg-primary h-8'}></div>
             {hoveredTime && (
               <div className={`absolute bg-toast z-tooltip my-4 max-w-240 break-words rounded px-8 py-4 top-[20px] text-xs text-white shadow`} style={{left: `calc(${hoverPercent}% - 12px)`}}>
-                {hoveredTime}
+                {converter(+hoveredTime)}
               </div>
             )}
           </div>

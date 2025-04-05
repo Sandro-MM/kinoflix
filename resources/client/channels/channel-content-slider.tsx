@@ -14,7 +14,7 @@ import {ChevronLeftIcon} from '@ui/icons/material/ChevronLeft';
 import {ChevronRightIcon} from '@ui/icons/material/ChevronRight';
 import {ChannelHeader} from '@app/channels/channel-header/channel-header';
 import {AnimatePresence, motion as m, useDragControls} from 'framer-motion';
-import {Link} from 'react-router';
+import {Link, useNavigate} from 'react-router';
 import {getWatchLink} from '@app/videos/watch-page/get-watch-link';
 import {useChannelContent} from '@common/channels/requests/use-channel-content';
 import {Channel, ChannelContentItem} from '@common/channels/channel';
@@ -35,6 +35,7 @@ export function ChannelContentSlider({
     scrollToPreviousPage,
     selectItem
   } = useCarousel({rotate: true});
+
   const {data: pagination} =
     useChannelContent<ChannelContentItem<Title>>(channel);
   return (
@@ -99,6 +100,8 @@ interface SlideProps {
   index: number;
 }
 function Slide({item, index}: SlideProps) {
+  const navigate = useNavigate();
+
   return (
     <div className="relative h-full w-full flex-shrink-0 snap-start snap-normal overflow-hidden">
       <div className={'md:h-[100vh] w-[100vw] h-[50vh] max-md:max-h-[400px]'}>
@@ -111,7 +114,8 @@ function Slide({item, index}: SlideProps) {
       />
         <div className="absolute inset-0 bg-gradient-to-r from-[#060606] to-[rgba(0,0,0,0)] md:h-[100vh] w-[100vw] h-[50vh] max-md:max-h-[400px]"></div>
       </div>
-      <div className="absolute inset-0 isolate flex h-full w-full items-center justify-start gap-24 rounded p-30 text-white md:items-end">
+      <div onClick={()=>navigate(getWatchLink(item.primary_video))}
+        className="absolute inset-0 isolate flex h-full w-full items-center justify-start gap-24 rounded p-30 text-white md:items-end">
         <div className="absolute left-0 h-full w-full bg-gradient-to-b from-black/40 max-md:top-0 md:bottom-0 md:h-3/4 md:bg-gradient-to-t md:from-black/100" />
         {/*<TitlePoster*/}
         {/*  title={item}*/}

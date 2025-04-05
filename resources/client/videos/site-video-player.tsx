@@ -127,6 +127,7 @@ function NativeVideoPlayer({
   const [skipTime, setSkipTime] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [canSkip, setCanSkip] = useState<boolean>(false);
+  const [muted, setMuted] = useState<boolean>(true);
 
 
 
@@ -148,7 +149,13 @@ function NativeVideoPlayer({
           console.log(creative,'creativecreativecreative');
           const mediaFileUrl = creative?.mediaFiles?.find((mf:any) => mf.fileURL)?.fileURL;
           const mediaFileSkipDelay = creative?.skipDelay;
-          setSkipTime(mediaFileSkipDelay)
+          console.log(mediaFileSkipDelay);
+          if (mediaFileSkipDelay){
+            setSkipTime(mediaFileSkipDelay)
+          } else {
+            setSkipTime(15)
+          }
+
 
           console.log(mediaFileSkipDelay,'mediaFileSkipDelay');
           console.log(mediaFileUrl,'mediaFileUrlmediaFileUrl');
@@ -158,7 +165,9 @@ function NativeVideoPlayer({
             const tracker = new VASTTracker(vastClient, validAd, creative);
             setVastTracker(tracker);
             tracker.trackImpression();
-
+            setTimeout(() => {
+              setMuted(false);
+            }, 2500);
 
           } else {
             setAdMediaUrl(null)
@@ -269,6 +278,7 @@ function NativeVideoPlayer({
         <div className="w-full h-full bg-twitter flex justify-center items-center relative">
           <div className="w-full h-full relative flex justify-center items-center">
             <video
+              muted={muted}
               ref={videoRef}
               controls={false}
               autoPlay

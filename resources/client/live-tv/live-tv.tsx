@@ -74,12 +74,22 @@ export function LiveTv() {
   }, []);
 
   useEffect(() => {
+    setPrograms(null)
     fetchPrograms(selectedChannel?.id, selectedDate!);
     if (selectedChannel) {
       console.log(selectedChannel.stream, 'selectedChannel.stream');
       setSelectedVideo(selectedChannel.stream);
     }
   }, [selectedChannel, selectedDate]);
+
+  useEffect(() => {
+    if (selectedChannel){
+      setSelectedVideo(
+        `https://api.oho.ge/tv/streaming/dvr/?start=${selectedTime}&end=${null}&id=${selectedChannel.id}.m3u8`,
+      );
+      navigate(`/live-tv/${routeChannelId}/${routeDate}/${selectedTime}`);
+    }
+  }, [selectedTime]);
 
   const fetchChannels = async (
     setChannels: (channels: Channel[]) => void,
@@ -137,6 +147,8 @@ export function LiveTv() {
     );
     navigate(`/live-tv/${routeChannelId}/${routeDate}/${program.start}`);
   };
+
+
 
   const channelSelect = (
     <ChannelsSelect

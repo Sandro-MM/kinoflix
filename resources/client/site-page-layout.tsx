@@ -11,7 +11,7 @@ export function SitePageLayout({children}: Props) {
   useScrollToTop();
   return (
     <div className="flex flex-col">
-      <MainNavbar />
+      <MainNavbar isTransparent={true} />
       <div className="flex-auto md:ml-[46px]">
         <AdHost slot="general_top" className="py-24" />
         <div className="relative min-h-[1000px] overflow-hidden">

@@ -37,7 +37,7 @@ export function WatchPage() {
 
   return (
     <Fragment>
-      <MainNavbar />
+      <MainNavbar/>
       <div style={darkThemeVars} className="dark min-h-screen bg text">
         <div className="container mx-auto p-14 md:p-24">
           <Content />

@@ -46,6 +46,7 @@ export interface NavbarProps {
   authMenuItems?: NavbarAuthUserProps['items'];
   alwaysDarkMode?: boolean;
   wrapInContainer?: boolean;
+  isTransparent: boolean;
 }
 export function Navbar(props: NavbarProps) {
   let {
@@ -63,6 +64,7 @@ export function Navbar(props: NavbarProps) {
     primaryButtonColor,
     authMenuItems,
     logoColor,
+    isTransparent,
     alwaysDarkMode = false,
     wrapInContainer = false,
   } = props;
@@ -93,10 +95,10 @@ export function Navbar(props: NavbarProps) {
   }, []);
 
   const dynamicStyle = {
-    backgroundColor: scrolled ? "" : "transparent",
+    backgroundColor: isTransparent? (scrolled ? "" : "transparent"):"",
     background: scrolled
       ? ""
-      : "linear-gradient(180deg, rgba(0, 0, 0, .7) 10%, rgba(0, 0, 0, 0))",
+      : isTransparent?"linear-gradient(180deg, rgba(0, 0, 0, .7) 10%, rgba(0, 0, 0, 0))":'',
     transition: "all 0.3s ease-in-out",
     zIndex: 5,
   };
@@ -111,6 +113,7 @@ export function Navbar(props: NavbarProps) {
         size === 'xs' && 'h-48 py-4',
         border,
         className,
+        `${isTransparent?'':'bg-secondary'}`,
       )}
     >
       <div

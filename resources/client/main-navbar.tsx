@@ -9,11 +9,13 @@ import {Tooltip} from '@ui/tooltip/tooltip';
 
 interface Props {
   position?: 'fixed' | 'relative';
+  isTransparent?: boolean;
 }
-export function MainNavbar({position = 'relative'}: Props) {
+export function MainNavbar({position = 'relative',isTransparent = false}: Props) {
   return (
     <>
       <Navbar
+      isTransparent={isTransparent}
       size="md"
       menuPosition="primary"
       className={'z-40 w-full flex-shrink-0 fixed top-0 pl-[80px]'}
