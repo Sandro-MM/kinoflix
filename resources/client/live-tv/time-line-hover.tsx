@@ -2,14 +2,16 @@ import React, {useState, useRef, MouseEvent, ReactElement} from 'react';
 import c from 'highlight.js/lib/languages/c';
 import {Tooltip} from '@ui/tooltip/tooltip';
 import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
+import {Channel, VideoPlayerLiveTV} from '@app/live-tv/live-tv';
 
 interface TimelineSelectorProps {
   onTimeSelect: (time: string | number) => void;
   children: ReactElement | null | undefined;
   selectedDate: string | number | null | undefined;
+  selectedChannel:Channel
 }
 
-const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,children,selectedDate }) => {
+const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,children,selectedDate,selectedChannel }) => {
   const timelineRef = useRef<HTMLDivElement | null>(null);
   const [hoveredTime, setHoveredTime] = useState<string | number | null>(null);
   const [hoverPercent, setHoverPercent] = useState<number | null>(null);
@@ -109,8 +111,13 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
           >
             <div className={'w-full bg-primary h-8'}></div>
             {hoveredTime && (
-              <div className={`absolute bg-toast z-tooltip my-4 max-w-240 break-words rounded px-8 py-4 top-[20px] text-xs text-white shadow`} style={{left: `calc(${hoverPercent}% - 12px)`}}>
+              <div className={`absolute bg-toast z-tooltip text-center my-4 max-w-240 min-w-240 break-words rounded px-8 py-4 -translate-y-full  -translate-x-1/2 top-[-10px] text-xs text-white shadow`} style={{left: `${hoverPercent}%`}}>
                 {converter(+hoveredTime)}
+                {hoveredTime && <VideoPlayerLiveTV
+                  keyItem={hoveredTime.toString()}
+                  stream={`https://api.oho.ge/tv/streaming/dvr/?start=${hoveredTime}&id=${selectedChannel.id}.m3u8`}
+                  enableControls={false}
+                />}
               </div>
             )}
           </div>

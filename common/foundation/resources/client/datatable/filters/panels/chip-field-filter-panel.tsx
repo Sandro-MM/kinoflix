@@ -8,6 +8,7 @@ import {Trans} from '@ui/i18n/trans';
 export function ChipFieldFilterPanel({
   filter,
 }: FilterPanelProps<FilterChipFieldControl>) {
+  console.log(filter,'filterfilter')
   const {trans} = useTrans();
   return (
     <FormChipField

@@ -3,7 +3,7 @@ import React from 'react';
 import {Tooltip} from '@ui/tooltip/tooltip';
 import TimelineSelector from '@app/live-tv/time-line-hover';
 import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
-import {VideoPlayerLiveTV} from '@app/live-tv/live-tv';
+import {Channel, VideoPlayerLiveTV} from '@app/live-tv/live-tv';
 
 interface Program {
   title: {
@@ -22,6 +22,7 @@ interface TimelineItemProps {
   selectedDate: string | null;
   setSelectedTime: (time: string | null | number) => void;
   selectedTime: string | null | number;
+  selectedChannel: Channel;
 }
 
 
@@ -32,6 +33,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
                                                             selectedDate,
                                                             selectedTime,
                                                             setSelectedTime,
+                                                            selectedChannel
 
 }) => {
 
@@ -104,7 +106,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
       </div>
       <TimeLineSvg />
       <div className={' h-18 w-full'}>
-        <TimelineSelector selectedDate={selectedDate} onTimeSelect={setSelectedTime}>
+        <TimelineSelector selectedChannel={selectedChannel} selectedDate={selectedDate} onTimeSelect={setSelectedTime}>
           {programsItem}
         </TimelineSelector>
       </div>

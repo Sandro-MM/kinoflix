@@ -14,6 +14,7 @@ import {useFormContext, useWatch} from 'react-hook-form';
 export function InputFilterPanel({
   filter,
 }: FilterPanelProps<FilterTextInputControl | FilterNumberInputControl>) {
+  console.log(filter,'InputFilterPanel')
   const control = filter.control;
   const form = useFormContext();
   const selectedOperator = useWatch({

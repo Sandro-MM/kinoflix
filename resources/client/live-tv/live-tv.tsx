@@ -18,8 +18,22 @@ import {useNavigate, useParams} from 'react-router';
 import {useDialogContext} from '@ui/overlays/dialog/dialog-context';
 import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
 import {Tooltip} from '@ui/tooltip/tooltip';
+import {
+  BackendFilter,
+  FilterChipFieldControl, FilterTextInputControl
+} from '@common/datatable/filters/backend-filter';
+import {
+  ChipFieldFilterPanel
+} from '@common/datatable/filters/panels/chip-field-filter-panel';
+import {FormProvider, useForm} from 'react-hook-form';
+import {
+  CreateNewsArticlePayload
+} from '@app/admin/news/requests/use-create-news-article';
+import {
+  InputFilterPanel
+} from '@common/datatable/filters/panels/input-filter-panel';
 
-interface Channel {
+export interface Channel {
   id: string;
   name: {
     en: string;
@@ -61,6 +75,16 @@ export function LiveTv() {
   const width = useWindowWidth();
   const settings = useSettings();
   const navigate = useNavigate();
+
+  const form = useForm<CreateNewsArticlePayload>({
+
+  });
+
+  const handleSave = (editorContent: string) => {
+    return
+  };
+
+
 
   useEffect(() => {
     fetchChannels(setChannels, setSelectedChannel, routeChannelId);
@@ -150,6 +174,8 @@ export function LiveTv() {
 
 
 
+
+
   const channelSelect = (
     <ChannelsSelect
       channels={channels}
@@ -180,7 +206,43 @@ export function LiveTv() {
   );
 
   const DesktopSelectMenu = width >= 1024 && (
-    <>
+    <FormProvider {...form}>
+      <div>
+          <ChipFieldFilterPanel
+            filter={
+              {
+                control: {
+                  type: "chipField",
+                  placeholder: {
+                    message: "Pick Genres"
+                  },
+                  defaultValue: [],
+                  options: [
+                    {
+                      label: {
+                        "message": "United States of America"
+                      },
+                      key: 1,
+                      value: 1
+                    },
+                    {
+                      label: {
+                        "message": "United Kingdom"
+                      },
+                      key: 2,
+                      value: 2
+                    },
+                  ]
+                },
+                key: "productionCountries",
+                label: {
+                  message: "Production countries"
+                },
+                defaultOperator: "hasAll"
+              } as BackendFilter<FilterChipFieldControl>}
+          />
+
+
       <div
         className={
           'flex max-h-[calc(100vh-262px)] w-[260px] min-w-[260px] max-w-[260px] flex-col overflow-y-scroll overflow-x-hidden'
@@ -188,14 +250,30 @@ export function LiveTv() {
       >
         {channelSelectDesktop}
       </div>
-      <div
-        className={
-          'flex max-h-[calc(100vh-262px)] !w-[300px] !min-w-[300px] !max-w-[300px] flex-col overflow-y-scroll overflow-x-hidden'
-        }
-      >
-        {programSelect}
       </div>
-    </>
+      <div>
+        <InputFilterPanel
+          filter={{
+            "control": {
+              "type": "input",
+              "inputType": "string",
+            },
+            "key": "program",
+            "label": {
+              "message": "Program"
+            },
+          }}
+        />
+        <div
+          className={
+            'flex max-h-[calc(100vh-262px)] !w-[300px] !min-w-[300px] !max-w-[300px] flex-col overflow-y-scroll overflow-x-hidden'
+          }
+        >
+          {programSelect}
+        </div>
+      </div>
+
+    </FormProvider>
   );
 
   const videoPlayer = (
@@ -262,6 +340,7 @@ export function LiveTv() {
         {width >= 1024 && selectedChannel && (
           <>
             <TimelineItem
+              selectedChannel={selectedChannel}
               selectedDate={selectedDate}
               programs={programs}
               selectedProgram={selectedProgram}
@@ -292,6 +371,10 @@ export const ChannelsSelect: React.FC<ChannelsSelectProps> = ({
   setSelectedChannel,
 }) => {
   const dialogContext = useDialogContext();
+
+
+
+
   return (
     <>
       {channels &&
@@ -332,6 +415,9 @@ export const ChannelsSelectDesktop: React.FC<ChannelsSelectProps> = ({
   selectedChannel,
   setSelectedChannel,
 }) => {
+
+
+
   return (
     <>
       {channels &&
@@ -346,7 +432,6 @@ export const ChannelsSelectDesktop: React.FC<ChannelsSelectProps> = ({
                   stream={`${channel?.stream}?quality=low`}
                   enableControls={false}
                 />
-                {channel?.stream}
               </div>
             }
           >
