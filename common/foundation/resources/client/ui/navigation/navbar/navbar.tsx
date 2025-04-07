@@ -46,7 +46,7 @@ export interface NavbarProps {
   authMenuItems?: NavbarAuthUserProps['items'];
   alwaysDarkMode?: boolean;
   wrapInContainer?: boolean;
-  isTransparent: boolean;
+  isTransparent?: boolean;
 }
 export function Navbar(props: NavbarProps) {
   let {
@@ -64,7 +64,7 @@ export function Navbar(props: NavbarProps) {
     primaryButtonColor,
     authMenuItems,
     logoColor,
-    isTransparent,
+    isTransparent = false,
     alwaysDarkMode = false,
     wrapInContainer = false,
   } = props;

@@ -235,7 +235,7 @@ export function LiveTv() {
                   message: "Production countries"
                 },
                 defaultOperator: "hasAll"
-              }}
+              } as BackendFilter<FilterChipFieldControl>}
           />
 
 
@@ -258,7 +258,7 @@ export function LiveTv() {
             label: {
               message: "Program"
             },
-          }}
+          } as BackendFilter<FilterTextInputControl>}
         />
         <div
           className={
