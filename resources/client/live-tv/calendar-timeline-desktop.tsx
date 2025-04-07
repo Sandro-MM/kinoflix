@@ -169,7 +169,7 @@ export default function UpNext({
       <AnimatePresence initial={false} mode="wait">
         <div className="w-[calc(100%-100px)] mx-auto flex-shrink-0 max-md:hidden">
           <div className="hidden-scrollbar flex h-full snap-x snap-mandatory gap-2 overflow-x-auto">
-            {visibleItems.map((date, index) => (
+            {visibleItems.map((date:any, index:number) => (
               <m.div
                 key={index}
                 className="relative flex-auto max-w-[140px]"

@@ -30,6 +30,7 @@ import {
   InputFilterPanel
 } from '@common/datatable/filters/panels/input-filter-panel';
 import {PastDatesListDesktop} from '@app/live-tv/calendar-timeline-desktop';
+import {BackendFilter,FilterTextInputControl,FilterChipFieldControl} from '@common/datatable/filters/backend-filter';
 
 export interface Channel {
   id: string;
