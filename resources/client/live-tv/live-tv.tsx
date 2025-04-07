@@ -281,7 +281,8 @@ export function LiveTv() {
           setSelectedVideo={setSelectedVideo}
           vastUrl={selectedChannel?.vast.url}
           keyItem={selectedVideo}
-          stream={selectedChannel?.stream || ''}
+          streamink={selectedChannel?.stream}
+          stream={selectedVideo || ''}
         />
       )}
     </>
@@ -531,7 +532,8 @@ export const VideoPlayerLiveTV = ({keyItem,
   stream,
   enableControls,
   vastUrl,
-  setSelectedVideo
+  setSelectedVideo,
+  streamink
 }: {
   keyItem: string;
   stream: string;
@@ -544,6 +546,8 @@ export const VideoPlayerLiveTV = ({keyItem,
 
   return (
     <SiteVideoPlayer
+      setSelectedVideo={setSelectedVideo}
+      streamink={streamink}
       isLiveTvControls={true}
       enableControls={enableControls}
       key={keyItem}

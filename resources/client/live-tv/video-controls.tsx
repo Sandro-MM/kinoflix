@@ -116,30 +116,30 @@ export const VideoControls = ({
       {forward1}
       {forward5}
 
-      {/*{setSelectedVideo && streamink && (*/}
-      {/*  <Button*/}
-      {/*    color={'chip'}*/}
-      {/*    variant={'flat'}*/}
-      {/*    onClick={() => {*/}
-      {/*      setSelectedVideo(streamink);*/}
-      {/*      console.log(streamink);*/}
-      {/*    }}*/}
-      {/*    className="flex items-center justify-end gap-5 px-6 py-2"*/}
-      {/*  >*/}
-      {/*    <div className={'flex items-center justify-end gap-5'}>*/}
-      {/*      <svg*/}
-      {/*        xmlns="http://www.w3.org/2000/svg"*/}
-      {/*        viewBox="0 0 9 10"*/}
-      {/*        width="9"*/}
-      {/*        height="10"*/}
-      {/*        className="svg-icon--step-forward svg-icon"*/}
-      {/*      >*/}
-      {/*        <path d="M0 0v10l7-5-7-5zm7 0h2v10H7V0z"></path>*/}
-      {/*      </svg>*/}
-      {/*      Live*/}
-      {/*    </div>*/}
-      {/*  </Button>*/}
-      {/*)}*/}
+      {setSelectedVideo && streamink && (
+        <Button
+          color={'chip'}
+          variant={'flat'}
+          onClick={() => {
+            setSelectedVideo(streamink);
+            console.log(streamink);
+          }}
+          className="flex items-center justify-end gap-5 px-6 py-2"
+        >
+          <div className={'flex items-center justify-end gap-5'}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 9 10"
+              width="9"
+              height="10"
+              className="svg-icon--step-forward svg-icon"
+            >
+              <path d="M0 0v10l7-5-7-5zm7 0h2v10H7V0z"></path>
+            </svg>
+            Live
+          </div>
+        </Button>
+      )}
     </div>
   );
 };

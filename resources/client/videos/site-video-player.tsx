@@ -349,6 +349,8 @@ function NativeVideoPlayer({
         </div>
       ) : (
         <VideoPlayer
+          setSelectedVideo={setSelectedVideo}
+          streamink={streamink}
           isLiveTvControls={isLiveTvControls}
           enableControls={enableControls}
           apiRef={playerRef}
