@@ -102,6 +102,17 @@ export function useCarousel({rotate = false}: Options = {}) {
     }
   }, [activePage, rotate]);
 
+  const scrollToLastPage = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (el && itemWidth.current) {
+      const itemsPerPage = Math.floor(el.clientWidth / itemWidth.current);
+      const lastPageStartIndex = Math.max(0, el.children.length - itemsPerPage);
+      const scrollAmount = lastPageStartIndex * itemWidth.current;
+      el.scrollTo({ left: scrollAmount });
+      setActivePage(lastPageStartIndex);
+    }
+  }, []);
+
   return {
     scrollContainerRef,
     scrollToIndex,
@@ -112,6 +123,7 @@ export function useCarousel({rotate = false}: Options = {}) {
     activePage,
     containerClassName,
     itemClassName,
-    selectItem
+    selectItem,
+    scrollToLastPage
   };
 }

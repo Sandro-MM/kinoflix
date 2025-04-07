@@ -18,10 +18,7 @@ import {useNavigate, useParams} from 'react-router';
 import {useDialogContext} from '@ui/overlays/dialog/dialog-context';
 import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
 import {Tooltip} from '@ui/tooltip/tooltip';
-import {
-  BackendFilter,
-  FilterChipFieldControl, FilterTextInputControl
-} from '@common/datatable/filters/backend-filter';
+
 import {
   ChipFieldFilterPanel
 } from '@common/datatable/filters/panels/chip-field-filter-panel';
@@ -32,6 +29,7 @@ import {
 import {
   InputFilterPanel
 } from '@common/datatable/filters/panels/input-filter-panel';
+import {PastDatesListDesktop} from '@app/live-tv/calendar-timeline-desktop';
 
 export interface Channel {
   id: string;
@@ -64,7 +62,7 @@ interface Program {
 
 
 export function LiveTv() {
-  const {routeChannelId, routeDate, routeTime} = useParams();
+  const {routeChannelId, routeDate} = useParams();
   const [channels, setChannels] = useState<Channel[] | null>(null);
   const [programs, setPrograms] = useState<Program[] | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
@@ -80,9 +78,7 @@ export function LiveTv() {
 
   });
 
-  const handleSave = (editorContent: string) => {
-    return
-  };
+
 
 
 
@@ -95,7 +91,7 @@ export function LiveTv() {
       setSelectedDate(today);
       navigate(`/live-tv/${routeChannelId}/${today}`);
     }
-  }, []);
+  }, [ ]);
 
   useEffect(() => {
     setPrograms(null)
@@ -239,7 +235,7 @@ export function LiveTv() {
                   message: "Production countries"
                 },
                 defaultOperator: "hasAll"
-              } as BackendFilter<FilterChipFieldControl>}
+              }}
           />
 
 
@@ -254,13 +250,13 @@ export function LiveTv() {
       <div>
         <InputFilterPanel
           filter={{
-            "control": {
-              "type": "input",
-              "inputType": "string",
+            control: {
+              type: "input",
+              inputType: "string",
             },
-            "key": "program",
-            "label": {
-              "message": "Program"
+            key: "program",
+            label: {
+              message: "Program"
             },
           }}
         />
@@ -348,7 +344,9 @@ export function LiveTv() {
               selectedTime={selectedTime}
               setSelectedTime={setSelectedTime}
             />
-            {pastDatesList}
+            <PastDatesListDesktop  days={selectedChannel?.archiveDays || 0}
+                                   selectedDay={selectedDate}
+                                   setSelectedDay={changeDate}/>
           </>
         )}
       </div>
