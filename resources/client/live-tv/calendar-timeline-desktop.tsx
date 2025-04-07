@@ -38,10 +38,10 @@ export const PastDatesListDesktop = ({ days, selectedDay, setSelectedDay }: Past
   return (
     <div className={'flex items-center w-full'}>
 
-      <div className="gap-24 md:flex max-md:w-[100vw] w-[100vw] h-max">
+      <div className="md:flex max-md:w-[100vw] w-[100vw] h-max">
         <div className="relative flex-auto">
 
-            <div className={'lg:w-[calc(100vw-58px)] lg:ml-auto  w-full'}>
+            <div className={'lg:w-[calc(100vw-58px)] lg:mx-auto  w-full'}>
               {  pastDates &&
               <UpNext selectedDay={selectedDay} setSelectedDay={setSelectedDay} titles={pastDates} />
             }
@@ -154,7 +154,7 @@ export default function UpNext({
 
   return (
     <div className="w-full h-56 flex items-center justify-start relative">
-      {canScrollBackward && (
+
         <IconButton
           variant="text"
           className="h-56"
@@ -164,15 +164,15 @@ export default function UpNext({
         >
           <ChevronLeftIcon />
         </IconButton>
-      )}
+
 
       <AnimatePresence initial={false} mode="wait">
         <div className="w-[calc(100%-100px)] mx-auto flex-shrink-0 max-md:hidden">
-          <div className="hidden-scrollbar flex h-full snap-x snap-mandatory gap-2 overflow-x-auto">
+          <div className="hidden-scrollbar flex h-full snap-x snap-mandatory gap-[0] overflow-x-auto">
             {visibleItems.map((date:any, index:number) => (
               <m.div
                 key={index}
-                className="relative flex-auto max-w-[140px]"
+                className="relative flex-auto min-w-[140px] w-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -197,7 +197,7 @@ export default function UpNext({
         </div>
       </AnimatePresence>
 
-      {canScrollForward && (
+
         <IconButton
           variant="text"
           className="h-56"
@@ -207,7 +207,7 @@ export default function UpNext({
         >
           <ChevronRightIcon />
         </IconButton>
-      )}
+
     </div>
   );
 }

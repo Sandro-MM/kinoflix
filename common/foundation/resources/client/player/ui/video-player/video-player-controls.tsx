@@ -13,33 +13,58 @@ import {ToggleCaptionsButton} from '@common/player/ui/controls/toggle-captions-b
 import {PlaybackOptionsButton} from '@common/player/ui/controls/playback-options-button';
 import {FullscreenButton} from '@common/player/ui/controls/fullscreen-button';
 import {PipButton} from '@common/player/ui/controls/pip-button';
-import {Fragment, ReactNode} from 'react';
+import React, {Fragment, ReactNode} from 'react';
 import {useIsMobileMediaQuery} from '@ui/utils/hooks/is-mobile-media-query';
+import {VideoControls} from '@app/live-tv/video-controls';
+import {SkipButton} from '@app/live-tv/skip-button';
 
 interface Props {
   rightActions?: ReactNode;
   onPointerEnter?: () => void;
   onPointerLeave?: () => void;
+  isLiveTvControls?: boolean;
+  setSelectedVideo?: (video: string) => void;
+  streamink?: string;
 }
-export function VideoPlayerControls(props: Props) {
+
+export function VideoPlayerControls({
+  rightActions,
+  onPointerEnter,
+  onPointerLeave,
+  isLiveTvControls = false,
+  setSelectedVideo,
+  streamink
+}: Props) {
   const isMobile = useIsMobileMediaQuery();
   const controlsVisible = usePlayerStore(s => s.controlsVisible);
-
   const className = clsx(
     'player-bottom-text-shadow absolute z-40 text-white/87 transition-opacity duration-300',
-    controlsVisible ? 'opacity-100' : 'opacity-0'
+    controlsVisible ? 'opacity-100' : 'opacity-0',
   );
 
+  const sharedProps = {
+    rightActions,
+    onPointerEnter,
+    onPointerLeave,
+    isLiveTvControls,
+    className,
+    setSelectedVideo,
+    streamink
+  };
+
   return isMobile ? (
-    <MobileControls className={className} {...props} />
+    <MobileControls {...sharedProps} />
+  ) : isLiveTvControls ? (
+    <LiveControls {...sharedProps} />
   ) : (
-    <DesktopControls className={className} {...props} />
+    <DesktopControls {...sharedProps} />
   );
 }
 
 interface ResponsiveControlsProps extends Props {
   className: string;
 }
+
 function DesktopControls({
   onPointerEnter,
   onPointerLeave,
@@ -122,5 +147,56 @@ function MobileControls({
         <Seekbar trackColor="bg-white/40" />
       </div>
     </Fragment>
+  );
+}
+
+function LiveControls({
+  onPointerEnter,
+  onPointerLeave,
+  rightActions,
+  className,
+  setSelectedVideo,
+  streamink
+}: ResponsiveControlsProps) {
+  return (
+    <div className={'relative'}>
+      <div
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onClick={e => e.stopPropagation()}
+        className={clsx('bottom-0 left-0 right-0 p-8', className)}
+      >
+        <Seekbar trackColor="bg-white/40" />
+
+        <div className="flex w-full items-center gap-4">
+          <div className="ml-auto flex flex-shrink-0 items-center gap-4">
+            {rightActions}
+
+            <VolumeControls
+              className="max-md:hidden"
+              fillColor="bg-white"
+              trackColor="bg-white/20"
+              buttonColor="white"
+            />
+            <FullscreenButton className="ml-auto" color="white" />
+            <PipButton color="white" />
+          </div>
+        </div>
+      </div>
+
+      <div className={'absolute bottom-0 h-max w-full'}>
+        <VideoControls
+          backward30={<SkipButton seconds={30} direction={'backward'} />}
+          forward30={<SkipButton seconds={30} direction={'forward'} />}
+          playButton={<PlayButton color="white" />}
+          forward1={<SkipButton seconds={60} direction={'forward'} />}
+          backward1={<SkipButton seconds={60} direction={'backward'} />}
+          forward5={<SkipButton seconds={300} direction={'forward'} />}
+          backward5={<SkipButton seconds={300} direction={'backward'} />}
+          setSelectedVideo={setSelectedVideo}
+          streamink={streamink}
+        />
+      </div>
+    </div>
   );
 }

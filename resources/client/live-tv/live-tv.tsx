@@ -31,6 +31,7 @@ import {
 } from '@common/datatable/filters/panels/input-filter-panel';
 import {PastDatesListDesktop} from '@app/live-tv/calendar-timeline-desktop';
 import {BackendFilter,FilterTextInputControl,FilterChipFieldControl} from '@common/datatable/filters/backend-filter';
+import {usePlayerActions} from '@common/player/hooks/use-player-actions';
 
 export interface Channel {
   id: string;
@@ -242,7 +243,7 @@ export function LiveTv() {
 
       <div
         className={
-          'flex max-h-[calc(100vh-262px)] w-[260px] min-w-[260px] max-w-[260px] flex-col overflow-y-scroll overflow-x-hidden'
+          'flex max-h-[calc(100vh-294px)] w-[260px] min-w-[260px] max-w-[260px] flex-col overflow-y-scroll overflow-x-hidden'
         }
       >
         {channelSelectDesktop}
@@ -263,7 +264,7 @@ export function LiveTv() {
         />
         <div
           className={
-            'flex max-h-[calc(100vh-262px)] !w-[300px] !min-w-[300px] !max-w-[300px] flex-col overflow-y-scroll overflow-x-hidden'
+            'flex max-h-[calc(100vh-294px)] !w-[300px] !min-w-[300px] !max-w-[300px] flex-col overflow-y-scroll overflow-x-hidden'
           }
         >
           {programSelect}
@@ -277,9 +278,10 @@ export function LiveTv() {
     <>
       {selectedVideo && (
         <VideoPlayerLiveTV
+          setSelectedVideo={setSelectedVideo}
           vastUrl={selectedChannel?.vast.url}
           keyItem={selectedVideo}
-          stream={selectedVideo}
+          stream={selectedChannel?.stream || ''}
         />
       )}
     </>
@@ -321,16 +323,17 @@ export function LiveTv() {
     <Fragment>
       <DefaultMetaTags />
       <MainNavbar />
-      <div className={'mt-22 overflow-x-hidden'}>
-      <div className={'flex pt-60 md:ml-54'}>
+      <div className={'px-8'}>
+      <div className={'overflow-x-hidden'}>
+      <div className={'flex pt-[82px] md:ml-46'}>
         {DesktopSelectMenu}
-        <div className={'max-h-[calc(100vh-262px)] w-full'}>
+        <div className={'max-h-[calc(100vh-256px)] w-full'}>
           {selectedChannel && videoPlayer}
         </div>
       </div>
       {width >= 1024 && (
         <div className={'relative'}>
-          <VideoControls />
+
         </div>
       )}
       <div className={'ml-48 mt-60'}>
@@ -351,9 +354,10 @@ export function LiveTv() {
           </>
         )}
       </div>
-      {width <= 1024 && mobileSelectMenu}
       </div>
-      <Footer className="landing-container" />
+
+      </div>
+      {width <= 1024 && mobileSelectMenu}
     </Fragment>
   );
 }
@@ -527,35 +531,43 @@ export const VideoPlayerLiveTV = ({keyItem,
   stream,
   enableControls,
   vastUrl,
+  setSelectedVideo
 }: {
   keyItem: string;
   stream: string;
   enableControls?: boolean;
   vastUrl?: string;
-}) => (
-  <SiteVideoPlayer
-    enableControls={enableControls}
-    key={keyItem}
-    vastUrl={vastUrl}
-    autoPlay={true}
-    video={{
-      src: stream,
-      name: '123',
-      type: 'stream',
-      category: 'full',
-      origin: 'local',
-      quality: '480',
-      approved: true,
-      user_id: 1,
-      season_num: 1,
-      episode_num: 1,
-      title_id: 1,
-      model_type: 'video',
-      id: 1,
-      upvotes: 1,
-      downvotes: 1,
-      score: 1,
-    }}
-    mediaItemId={`123123`}
-  />
-);
+  setSelectedVideo?: (video: string) => void;
+  streamink?: string;
+}) => {
+
+
+  return (
+    <SiteVideoPlayer
+      isLiveTvControls={true}
+      enableControls={enableControls}
+      key={keyItem}
+      vastUrl={vastUrl}
+      autoPlay={true}
+      video={{
+        src: stream,
+        name: '123',
+        type: 'stream',
+        category: 'full',
+        origin: 'local',
+        quality: '480',
+        approved: true,
+        user_id: 1,
+        season_num: 1,
+        episode_num: 1,
+        title_id: 1,
+        model_type: 'video',
+        id: 1,
+        upvotes: 1,
+        downvotes: 1,
+        score: 1,
+      }}
+      mediaItemId={`123123`}
+    />
+
+)};

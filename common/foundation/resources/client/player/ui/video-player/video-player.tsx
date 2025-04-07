@@ -3,7 +3,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
-  useRef,
+  useRef, useState
 } from 'react';
 import {PlayerContext} from '@common/player/player-context';
 import {MediaItem} from '@common/player/media-item';
@@ -37,6 +37,9 @@ interface Props {
   apiRef?: MutableRefObject<PlayerActions>;
   rightActions?: ReactNode;
   enableControls?: boolean;
+  isLiveTvControls?: boolean;
+  setSelectedVideo?: (video: string) => void;
+  streamink?: string;
 }
 export function VideoPlayer({
   id,
@@ -50,7 +53,10 @@ export function VideoPlayer({
   onDestroy,
   apiRef,
   rightActions,
-  enableControls
+  enableControls,
+   isLiveTvControls,
+   setSelectedVideo,
+   streamink
 }: Props) {
   return (
     <PlayerContext
@@ -68,7 +74,7 @@ export function VideoPlayer({
       }}
     >
       <QueueOverrider src={src} queue={queue} />
-      <PlayerLayout enableControls={enableControls} apiRef={apiRef} rightActions={rightActions} />
+      <PlayerLayout setSelectedVideo={setSelectedVideo} streamink={streamink} isLiveTvControls={isLiveTvControls} enableControls={enableControls} apiRef={apiRef} rightActions={rightActions} />
     </PlayerContext>
   );
 }
@@ -77,14 +83,35 @@ interface PlayerLayoutProps {
   apiRef?: MutableRefObject<PlayerActions>;
   rightActions?: ReactNode;
   enableControls?: boolean;
+  isLiveTvControls?: boolean;
+  setSelectedVideo?: (video: string) => void;
+  streamink?: string;
 }
-function PlayerLayout({apiRef, rightActions,enableControls = true }: PlayerLayoutProps) {
+function PlayerLayout({apiRef, rightActions,enableControls = true,isLiveTvControls = false,setSelectedVideo,streamink }: PlayerLayoutProps) {
   const leaveTimerRef = useRef<number | null>();
   const inactiveTimerRef = useRef<number | null>();
   const pointerIsOverControls = useRef(false);
   const actions = usePlayerActions();
   const controlsVisible = usePlayerStore(s => s.controlsVisible);
   const {setControlsVisible, getState} = actions;
+
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsed(actions.getCurrentTime());
+      console.log(actions.getCurrentTime(),'timeEllapsed');
+    }, 1000); // update every second
+
+    return () => clearInterval(interval);
+  }, [actions.getCurrentTime]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
 
   const clickHandler = usePlayerClickHandler();
 
@@ -170,6 +197,9 @@ function PlayerLayout({apiRef, rightActions,enableControls = true }: PlayerLayou
       <BottomGradient />
        { enableControls &&
       <VideoPlayerControls
+        setSelectedVideo={setSelectedVideo}
+        streamink={streamink}
+        isLiveTvControls={isLiveTvControls}
         rightActions={rightActions}
         onPointerEnter={() => {
           pointerIsOverControls.current = true;
