@@ -294,6 +294,7 @@ function NativeVideoPlayer({
         <div className="relative flex h-full w-full items-center justify-center bg-twitter">
           <div className="relative flex h-full w-full items-center justify-center">
             <video
+              playsInline
               muted={muted}
               ref={videoRef}
               controls={false}
