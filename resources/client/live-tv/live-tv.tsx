@@ -552,7 +552,7 @@ export const VideoPlayerLiveTV = ({keyItem,
       enableControls={enableControls}
       key={keyItem}
       vastUrl={vastUrl}
-      autoPlay={true}
+      autoPlay={false}
       video={{
         src: stream,
         name: '123',

@@ -221,9 +221,6 @@ function NativeVideoPlayer({
       setAdMediaUrl(null);
 
 
-      setTimeout(() => {
-        playerRef.current?.play();
-      }, 300);
     };
 
     const handleClickThrough = () => {
@@ -262,9 +259,6 @@ function NativeVideoPlayer({
     setAdMediaUrl(null);
     setCanSkip(false);
 
-    setTimeout(() => {
-      playerRef.current?.play();
-    }, 300);
   };
 
   useEffect(() => {
