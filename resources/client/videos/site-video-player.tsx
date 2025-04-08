@@ -125,13 +125,15 @@ function NativeVideoPlayer({
   const mediaItem = videoToMediaItem(video, mediaItemId);
   const related = relatedVideos?.map(v => videoToMediaItem(v)) ?? [];
   const navigate = useNavigate();
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [adMediaUrl, setAdMediaUrl] = useState<string | null>(null);
   const [vastTracker, setVastTracker] = useState<any>(null);
   const [skipTime, setSkipTime] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [canSkip, setCanSkip] = useState<boolean>(false);
   const [muted, setMuted] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+
 
 
 
@@ -142,7 +144,7 @@ function NativeVideoPlayer({
       const vastClient = new VASTClient();
       try {
         // 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml'
-        const response = await vastClient.get(vastUrl);
+        const response = await vastClient.get('https://statics.dmcdn.net/h/html/vast/simple-inline.xml');
         if (response) {
           console.log(response);
           const validAd = response.ads.find(
@@ -268,6 +270,24 @@ function NativeVideoPlayer({
       document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [logVideoPlay]);
 
+
+  useEffect(() => {
+    const video:any = videoRef.current;
+
+    if (!video) return;
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+
+    return () => {
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+    };
+  }, []);
+
   return (
     <>
       {adMediaUrl ? (
@@ -277,7 +297,7 @@ function NativeVideoPlayer({
               muted={muted}
               ref={videoRef}
               controls={false}
-              autoPlay
+
               className="object-contain"
               style={{
                 width: '100%',
@@ -288,11 +308,35 @@ function NativeVideoPlayer({
             >
               <source src={adMediaUrl} type="video/mp4" />
             </video>
-
+            {!isPlaying && (
+              <button
+                onClick={async () => {
+                  try {
+                    await videoRef.current?.play();
+                    setIsPlaying(true);
+                  } catch (err) {
+                    console.warn('Failed to play video:', err);
+                  }
+                }}
+                className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 hover:bg-black/40 transition-colors"
+                style={{ border: 'none' }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  width="48"
+                  height="48"
+                  fill="white"
+                >
+                  <path d="M4 2l12 8-12 8z" />
+                </svg>
+              </button>
+            )}
+            <div className={'absolute bottom-16 right-16 flex items-center justify-center gap-12'}>
             <button
               onClick={() => setMuted(prev => !prev)}
               className={
-                'absolute bottom-16 right-32 flex items-center justify-center gap-14 rounded bg-background px-22 py-12'
+                'flex items-center justify-center gap-14 rounded bg-background px-22 py-12'
               }
               style={{
                 border: 'none',
@@ -325,7 +369,7 @@ function NativeVideoPlayer({
                 disabled={!canSkip}
                 onClick={handleSkip}
                 className={
-                  'absolute bottom-16 right-16 flex items-center justify-center gap-14 rounded bg-background px-22 py-12'
+                  'flex items-center justify-center gap-14 rounded bg-background px-22 py-12'
                 }
                 style={{
                   cursor: canSkip ? 'pointer' : 'default',
@@ -344,7 +388,9 @@ function NativeVideoPlayer({
                   <path d="M0 0v10l7-5-7-5zm7 0h2v10H7V0z"></path>
                 </svg>
               </button>
+
             )}
+           </div>
           </div>
         </div>
       ) : (
