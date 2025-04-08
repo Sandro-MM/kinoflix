@@ -144,7 +144,7 @@ function NativeVideoPlayer({
       const vastClient = new VASTClient();
       try {
         // 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml'
-        const response = await vastClient.get('https://statics.dmcdn.net/h/html/vast/simple-inline.xml');
+        const response = await vastClient.get(vastUrl);
         if (response) {
           console.log(response);
           const validAd = response.ads.find(
@@ -294,7 +294,7 @@ function NativeVideoPlayer({
         <div className="relative flex h-full w-full items-center justify-center bg-twitter">
           <div className="relative flex h-full w-full items-center justify-center">
             <video
-              muted={true}
+              muted={muted}
               autoPlay={true}
               playsInline
               ref={videoRef}
@@ -344,7 +344,7 @@ function NativeVideoPlayer({
                 border: 'none',
               }}
             >
-              {muted ? (
+              {!muted ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 15"
