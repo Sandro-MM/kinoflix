@@ -310,30 +310,30 @@ function NativeVideoPlayer({
             >
               <source src={adMediaUrl} type="video/mp4" />
             </video>
-            {!isPlaying && (
-              <button
-                onClick={async () => {
-                  try {
-                    await videoRef.current?.play();
-                    setIsPlaying(true);
-                  } catch (err) {
-                    console.warn('Failed to play video:', err);
-                  }
-                }}
-                className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 hover:bg-black/40 transition-colors"
-                style={{ border: 'none' }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  width="48"
-                  height="48"
-                  fill="white"
-                >
-                  <path d="M4 2l12 8-12 8z" />
-                </svg>
-              </button>
-            )}
+            {/*{!isPlaying && (*/}
+            {/*  <button*/}
+            {/*    onClick={async () => {*/}
+            {/*      try {*/}
+            {/*        await videoRef.current?.play();*/}
+            {/*        setIsPlaying(true);*/}
+            {/*      } catch (err) {*/}
+            {/*        console.warn('Failed to play video:', err);*/}
+            {/*      }*/}
+            {/*    }}*/}
+            {/*    className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 hover:bg-black/40 transition-colors"*/}
+            {/*    style={{ border: 'none' }}*/}
+            {/*  >*/}
+            {/*    <svg*/}
+            {/*      xmlns="http://www.w3.org/2000/svg"*/}
+            {/*      viewBox="0 0 20 20"*/}
+            {/*      width="48"*/}
+            {/*      height="48"*/}
+            {/*      fill="white"*/}
+            {/*    >*/}
+            {/*      <path d="M4 2l12 8-12 8z" />*/}
+            {/*    </svg>*/}
+            {/*  </button>*/}
+            {/*)}*/}
             <div className={'absolute bottom-16 right-16 flex items-center justify-center gap-12'}>
             <button
               onClick={() => setMuted(prev => !prev)}
