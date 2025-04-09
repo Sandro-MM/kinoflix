@@ -275,11 +275,11 @@ const VideoPlayerLiveTV = ({keyItem,
       isLiveTvControls={true}
       enableControls={enableControls}
       key={keyItem}
-      autoPlay={true}
+      autoPlay={false}
       video={{
         src: stream,
         name: '123',
-        type: 'stream',
+        type: 'video',
         category: 'full',
         origin: 'local',
         quality: '480',
