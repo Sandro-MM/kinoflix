@@ -279,7 +279,7 @@ const VideoPlayerLiveTV = ({keyItem,
       video={{
         src: stream,
         name: '123',
-        type: 'video',
+        type: 'stream',
         category: 'full',
         origin: 'local',
         quality: '480',
