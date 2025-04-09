@@ -212,9 +212,9 @@ const VideoPlayerLiveTV = ({keyItem,
           key={keyItem}
           autoPlay={true}
           video={{
-            src: stream,
+            src: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
             name: '123',
-            type: 'stream',
+            type: 'video',
             category: 'full',
             origin: 'local',
             quality: '480',
