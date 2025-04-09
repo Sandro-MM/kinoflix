@@ -1,6 +1,7 @@
 import {SiteVideoPlayer} from '@app/videos/site-video-player';
 import React, { useEffect, useRef, useState} from 'react';
 import {VASTClient, VASTTracker} from '@dailymotion/vast-client';
+import {IS_IOS} from '@ui/utils/platform';
 
 const VideoPlayerLiveTV = ({keyItem,
                                     stream,
@@ -23,7 +24,7 @@ const VideoPlayerLiveTV = ({keyItem,
   const [skipTime, setSkipTime] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [canSkip, setCanSkip] = useState<boolean>(false);
-  const [muted, setMuted] = useState<boolean>(true);
+  const [muted, setMuted] = useState<boolean>(IS_IOS);
   const [isPlaying, setIsPlaying] = useState(false);
   const [adCompletedByUser, setAdCompletedByUser] = useState(false);
 
