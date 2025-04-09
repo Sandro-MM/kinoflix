@@ -224,7 +224,13 @@ export const createAdSlice: StoreLice = (set, get, store) => {
           }
         };
         setTimeout(async () => {
+          if (isiOS()) {
+            console.log('[finishAd] 🧽 Resetting video element for iOS');
+            get().providerApi?.resetVideoElement?.();
+          }
+
           await get().cue(mediaWithoutVast);
+
           if (isiOS()) {
             try {
               await get().play();
@@ -232,7 +238,7 @@ export const createAdSlice: StoreLice = (set, get, store) => {
               console.warn('[finishAd] iOS autoplay failed, waiting for user gesture');
             }
           }
-        }, 500);
+        }, 300);
         // await get().play();
       }
     },

@@ -16,4 +16,5 @@ export interface PlayerProviderApi {
   onTimeUpdate?: (currentTime: number) => void;
   onEnded?: () => void;
   onClick?: () => void;
+  resetVideoElement?: () => void;
 }

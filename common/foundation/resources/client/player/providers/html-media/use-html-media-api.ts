@@ -61,6 +61,15 @@ export function useHtmlMediaApi({
       getSrc: () => {
         return ref.current?.src;
       },
+      resetVideoElement: () => {
+        const video = ref.current;
+        if (!video) return;
+        console.log('[HtmlVideoProvider] 🧹 Resetting <video> element');
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+      },
+
     }),
     [ref, store, internalState, toggleTextTrackModes]
   );
