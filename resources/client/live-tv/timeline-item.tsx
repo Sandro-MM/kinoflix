@@ -3,7 +3,8 @@ import React from 'react';
 import {Tooltip} from '@ui/tooltip/tooltip';
 import TimelineSelector from '@app/live-tv/time-line-hover';
 import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
-import {Channel, VideoPlayerLiveTV} from '@app/live-tv/live-tv';
+import {Channel} from '@app/live-tv/live-tv';
+import VideoPlayerLiveTV from '@app/live-tv/live-tv-video-player';
 
 interface Program {
   title: {

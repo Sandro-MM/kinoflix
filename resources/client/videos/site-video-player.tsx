@@ -32,7 +32,6 @@ interface Props {
   isLiveTvControls?: boolean;
   setSelectedVideo?: (video: string) => void;
   streamink?: string;
-
 }
 export const SiteVideoPlayer = memo((props: Props) => {
   const {video, autoPlay, title, episode, vastUrl,isLiveTvControls} = props;
@@ -134,7 +133,6 @@ function NativeVideoPlayer({
   const [canSkip, setCanSkip] = useState<boolean>(false);
   const [muted, setMuted] = useState<boolean>(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [adCompletedByUser, setAdCompletedByUser] = useState(false);
 
 
 
@@ -146,7 +144,7 @@ function NativeVideoPlayer({
       const vastClient = new VASTClient();
       try {
         // 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml'
-        const response = await vastClient.get('https://statics.dmcdn.net/h/html/vast/simple-inline.xml');
+        const response = await vastClient.get(vastUrl);
         if (response) {
           console.log(response);
           const validAd = response.ads.find(
@@ -260,20 +258,8 @@ function NativeVideoPlayer({
     }
     setAdMediaUrl(null);
     setCanSkip(false);
-    setAdCompletedByUser(true); // Mark user interaction
-  };
 
-  const handleEnded = () => {
-    vastTracker.complete();
-    setAdMediaUrl(null);
-    setAdCompletedByUser(true); // Mark ad completion as user interaction
   };
-
-  useEffect(() => {
-    if (adCompletedByUser && playerRef.current) {
-      playerRef.current.play?.();
-    }
-  }, [adCompletedByUser]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -397,7 +383,7 @@ function NativeVideoPlayer({
           apiRef={playerRef}
           id="player"
           queue={[mediaItem, ...related]}
-          autoPlay={autoPlay && adCompletedByUser} // Autoplay only after user interaction
+          autoPlay={autoPlay}
           onBeforePlayNext={nextMedia => {
             if (nextMedia && !isSameMedia(mediaItem, nextMedia)) {
               navigate(getWatchLink(nextMedia.meta));
@@ -408,6 +394,7 @@ function NativeVideoPlayer({
           listeners={{
             playbackEnd: () => logVideoPlay(),
             beforeCued: ({previous}) => {
+              // only log when cueing from previous video and not when cueing initial one
               if (previous) {
                 logVideoPlay();
               }

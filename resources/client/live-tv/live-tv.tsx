@@ -31,7 +31,7 @@ import {
 } from '@common/datatable/filters/panels/input-filter-panel';
 import {PastDatesListDesktop} from '@app/live-tv/calendar-timeline-desktop';
 import {BackendFilter,FilterTextInputControl,FilterChipFieldControl} from '@common/datatable/filters/backend-filter';
-import {usePlayerActions} from '@common/player/hooks/use-player-actions';
+import VideoPlayerLiveTV from '@app/live-tv/live-tv-video-player';
 
 export interface Channel {
   id: string;
@@ -431,11 +431,11 @@ export const ChannelsSelectDesktop: React.FC<ChannelsSelectProps> = ({
             key={channel?.id}
             label={
               <div>
-                <VideoPlayerLiveTV
-                  keyItem={channel?.id}
-                  stream={`${channel?.stream}?quality=low`}
-                  enableControls={false}
-                />
+                {/*<VideoPlayerLiveTV*/}
+                {/*  keyItem={channel?.id}*/}
+                {/*  stream={`${channel?.stream}?quality=low`}*/}
+                {/*  enableControls={false}*/}
+                {/*/>*/}
               </div>
             }
           >
@@ -528,50 +528,4 @@ const DialogTriggerItem = ({
   </DialogTrigger>
 );
 
-export const VideoPlayerLiveTV = ({keyItem,
-  stream,
-  enableControls,
-  vastUrl,
-  setSelectedVideo,
-  streamink
-}: {
-  keyItem: string;
-  stream: string;
-  enableControls?: boolean;
-  vastUrl?: string;
-  setSelectedVideo?: (video: string) => void;
-  streamink?: string;
-}) => {
 
-
-  return (
-    <SiteVideoPlayer
-      setSelectedVideo={setSelectedVideo}
-      streamink={streamink}
-      isLiveTvControls={true}
-      enableControls={enableControls}
-      key={keyItem}
-      vastUrl={vastUrl}
-      autoPlay={false}
-      video={{
-        src: stream,
-        name: '123',
-        type: 'stream',
-        category: 'full',
-        origin: 'local',
-        quality: '480',
-        approved: true,
-        user_id: 1,
-        season_num: 1,
-        episode_num: 1,
-        title_id: 1,
-        model_type: 'video',
-        id: 1,
-        upvotes: 1,
-        downvotes: 1,
-        score: 1,
-      }}
-      mediaItemId={`123123`}
-    />
-
-)};
