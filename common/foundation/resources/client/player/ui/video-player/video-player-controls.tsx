@@ -25,6 +25,11 @@ interface Props {
   isLiveTvControls?: boolean;
   setSelectedVideo?: (video: string) => void;
   streamink?: string;
+  liveControls?: {
+    bottom?:ReactNode;
+    left?:ReactNode;
+    right?:ReactNode;
+  };
 }
 
 export function VideoPlayerControls({
@@ -33,7 +38,8 @@ export function VideoPlayerControls({
   onPointerLeave,
   isLiveTvControls = false,
   setSelectedVideo,
-  streamink
+  streamink,
+  liveControls,
 }: Props) {
   const isMobile = useIsMobileMediaQuery();
   const controlsVisible = usePlayerStore(s => s.controlsVisible);
@@ -49,7 +55,8 @@ export function VideoPlayerControls({
     isLiveTvControls,
     className,
     setSelectedVideo,
-    streamink
+    streamink,
+    liveControls,
   };
 
   return isMobile ? (
@@ -109,6 +116,7 @@ function MobileControls({
   onPointerEnter,
   onPointerLeave,
   className,
+
 }: ResponsiveControlsProps) {
   return (
     <Fragment>
@@ -156,47 +164,52 @@ function LiveControls({
   rightActions,
   className,
   setSelectedVideo,
-  streamink
+  streamink,
+  liveControls,
 }: ResponsiveControlsProps) {
+  const isFullscreen = usePlayerStore(s => s.isFullscreen);
+  const controlsVisible = usePlayerStore(s => s.controlsVisible);
   return (
-    <div className={'relative'}>
+    <div className={''}>
       <div
-        onPointerEnter={onPointerEnter}
-        onPointerLeave={onPointerLeave}
         onClick={e => e.stopPropagation()}
-        className={clsx('bottom-0 left-0 right-0 p-8', className)}
+        className={clsx('' +
+          'left-0 right-0 top-0 p-8 player-bottom-text-shadow !w-full !h-full absolute z-40 text-white/87 transition-opacity duration-300',
+          controlsVisible ? 'opacity-100' : 'opacity-0',)}
       >
-        <Seekbar trackColor="bg-white/40" />
 
-        <div className="flex w-full items-center gap-4">
-          <div className="ml-auto flex flex-shrink-0 items-center gap-4">
-            {rightActions}
+        <div  onPointerEnter={onPointerEnter}
+              onPointerLeave={onPointerLeave} className={'flex-col w-[250px] overflow-y-auto overflow-x-hidden max-h-[100vh] bg-opacity-75 bg-background bg-secondary opacity-s absolute left-0'}>
+          {isFullscreen && liveControls?.left}
+        </div>
 
-            <VolumeControls
-              className="max-md:hidden"
-              fillColor="bg-white"
-              trackColor="bg-white/20"
-              buttonColor="white"
-            />
-            <FullscreenButton className="ml-auto" color="white" />
-            <PipButton color="white" />
-          </div>
+        <div  onPointerEnter={onPointerEnter}
+              onPointerLeave={onPointerLeave} className={'flex-col w-[300px] overflow-y-auto max-h-[100vh] overflow-x-hidden bg-opacity-75 bg-background opacity-s absolute right-0'}>
+          {isFullscreen && liveControls?.right}
+        </div>
+
+
+        <div  onPointerEnter={onPointerEnter}
+              onPointerLeave={onPointerLeave} className={'absolute bottom-0  right-[33%] h-60 bg-primary'}>
+          {isFullscreen && liveControls?.bottom}
+        </div>
+
+
+            <div  onPointerEnter={onPointerEnter}
+                  onPointerLeave={onPointerLeave} className={'flex gap-5 absolute flex items-center right-0 bottom-0 h-34'}>
+              <VolumeControls
+                className="max-md:hidden"
+                fillColor="bg-white"
+                trackColor="bg-white/20"
+                buttonColor="white"
+              />
+              <FullscreenButton className="" color="white" />
+              <PipButton color="white" />
         </div>
       </div>
 
-      <div className={'absolute bottom-0 h-max w-full'}>
-        <VideoControls
-          backward30={<SkipButton seconds={30} direction={'backward'} />}
-          forward30={<SkipButton seconds={30} direction={'forward'} />}
-          playButton={<PlayButton color="white" />}
-          forward1={<SkipButton seconds={60} direction={'forward'} />}
-          backward1={<SkipButton seconds={60} direction={'backward'} />}
-          forward5={<SkipButton seconds={300} direction={'forward'} />}
-          backward5={<SkipButton seconds={300} direction={'backward'} />}
-          setSelectedVideo={setSelectedVideo}
-          streamink={streamink}
-        />
-      </div>
+  {!isFullscreen && liveControls?.bottom}
+
     </div>
   );
 }

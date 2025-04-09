@@ -40,6 +40,11 @@ interface Props {
   isLiveTvControls?: boolean;
   setSelectedVideo?: (video: string) => void;
   streamink?: string;
+  liveControls?: {
+    bottom?:ReactNode;
+    left?:ReactNode;
+    right?:ReactNode;
+  };
 }
 export function VideoPlayer({
   id,
@@ -56,7 +61,8 @@ export function VideoPlayer({
   enableControls,
    isLiveTvControls,
    setSelectedVideo,
-   streamink
+   streamink,
+                              liveControls
 }: Props) {
   return (
     <PlayerContext
@@ -74,7 +80,7 @@ export function VideoPlayer({
       }}
     >
       <QueueOverrider src={src} queue={queue} />
-      <PlayerLayout setSelectedVideo={setSelectedVideo} streamink={streamink} isLiveTvControls={isLiveTvControls} enableControls={enableControls} apiRef={apiRef} rightActions={rightActions} />
+      <PlayerLayout liveControls={liveControls} setSelectedVideo={setSelectedVideo} streamink={streamink} isLiveTvControls={isLiveTvControls} enableControls={enableControls} apiRef={apiRef} rightActions={rightActions} />
     </PlayerContext>
   );
 }
@@ -86,8 +92,13 @@ interface PlayerLayoutProps {
   isLiveTvControls?: boolean;
   setSelectedVideo?: (video: string) => void;
   streamink?: string;
+  liveControls?: {
+    bottom?:ReactNode;
+    left?:ReactNode;
+    right?:ReactNode;
+  };
 }
-function PlayerLayout({apiRef, rightActions,enableControls = true,isLiveTvControls = false,setSelectedVideo,streamink }: PlayerLayoutProps) {
+function PlayerLayout({apiRef, rightActions,enableControls = true,isLiveTvControls = false,setSelectedVideo,streamink,liveControls }: PlayerLayoutProps) {
   const leaveTimerRef = useRef<number | null>();
   const inactiveTimerRef = useRef<number | null>();
   const pointerIsOverControls = useRef(false);
@@ -197,6 +208,7 @@ function PlayerLayout({apiRef, rightActions,enableControls = true,isLiveTvContro
       <BottomGradient />
        { enableControls &&
       <VideoPlayerControls
+        liveControls={liveControls}
         setSelectedVideo={setSelectedVideo}
         streamink={streamink}
         isLiveTvControls={isLiveTvControls}

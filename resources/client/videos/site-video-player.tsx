@@ -3,7 +3,14 @@ import {VideoPlayer} from '@common/player/ui/video-player/video-player';
 import {VideoThumbnail} from '@app/videos/video-thumbnail';
 import {IconButton} from '@ui/buttons/icon-button';
 import {MediaPlayIcon} from '@ui/icons/media/media-play';
-import React, {memo, useEffect, useRef, useState} from 'react';
+import React, {
+  memo,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import {Video} from '@app/titles/models/video';
 import {Title} from '@app/titles/models/title';
 import {Episode} from '@app/titles/models/episode';
@@ -16,7 +23,6 @@ import {useNavigate} from '@common/ui/navigation/use-navigate';
 import {isSameMedia} from '@common/player/utils/is-same-media';
 import {Trans} from '@ui/i18n/trans';
 import {EpisodeSelector} from '@app/videos/watch-page/episode-selector';
-import {VASTClient, VASTTracker} from '@dailymotion/vast-client';
 
 interface Props {
   video: Video;
@@ -30,11 +36,16 @@ interface Props {
   enableControls?: boolean;
   vastUrl?: string;
   isLiveTvControls?: boolean;
+  liveControls?: {
+    bottom?:ReactNode;
+    left?:ReactNode;
+    right?:ReactNode;
+  };
   setSelectedVideo?: (video: string) => void;
   streamink?: string;
 }
 export const SiteVideoPlayer = memo((props: Props) => {
-  const {video, autoPlay, title, episode, vastUrl,isLiveTvControls} = props;
+  const {video, autoPlay, title, episode, vastUrl,isLiveTvControls,liveControls} = props;
   if (
     video.type === 'video' ||
     video.type === 'stream' ||
@@ -118,6 +129,7 @@ function NativeVideoPlayer({
   vastUrl,
   isLiveTvControls,
   setSelectedVideo,
+  liveControls,
   streamink
 }: Props) {
   const playerRef = useRef<PlayerActions>(null!);
@@ -125,15 +137,6 @@ function NativeVideoPlayer({
   const mediaItem = videoToMediaItem(video, mediaItemId);
   const related = relatedVideos?.map(v => videoToMediaItem(v)) ?? [];
   const navigate = useNavigate();
-
-
-
-
-
-
-
-
-
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
@@ -151,10 +154,10 @@ function NativeVideoPlayer({
 
   return (
     <>
-
         <VideoPlayer
           setSelectedVideo={setSelectedVideo}
           streamink={streamink}
+          liveControls={liveControls}
           isLiveTvControls={isLiveTvControls}
           enableControls={enableControls}
           apiRef={playerRef}

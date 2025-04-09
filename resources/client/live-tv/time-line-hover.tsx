@@ -114,11 +114,11 @@ const TimelineSelector: React.FC<TimelineSelectorProps> = ({ onTimeSelect,childr
             {hoveredTime && (
               <div className={`absolute bg-toast z-tooltip text-center my-4 max-w-240 min-w-240 break-words rounded px-8 py-4 -translate-y-full  -translate-x-1/2 top-[-10px] text-xs text-white shadow`} style={{left: `${hoverPercent}%`}}>
                 {converter(+hoveredTime)}
-                {hoveredTime && <VideoPlayerLiveTV
-                  keyItem={hoveredTime.toString()}
-                  stream={`https://api.oho.ge/tv/streaming/dvr/?start=${hoveredTime}&id=${selectedChannel.id}.m3u8`}
-                  enableControls={false}
-                />}
+                {/*{hoveredTime && <VideoPlayerLiveTV*/}
+                {/*  keyItem={hoveredTime.toString()}*/}
+                {/*  stream={`https://api.oho.ge/tv/streaming/dvr/?start=${hoveredTime}&id=${selectedChannel.id}.m3u8`}*/}
+                {/*  enableControls={false}*/}
+                {/*/>}*/}
               </div>
             )}
           </div>

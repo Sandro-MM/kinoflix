@@ -2,21 +2,47 @@ import {SiteVideoPlayer} from '@app/videos/site-video-player';
 import React, { useEffect, useRef, useState} from 'react';
 import {VASTClient, VASTTracker} from '@dailymotion/vast-client';
 import {IS_IOS} from '@ui/utils/platform';
+import {VideoControls} from '@app/live-tv/video-controls';
+import {SkipButton} from '@app/live-tv/skip-button';
+import {PlayButton} from '@common/player/ui/controls/play-button';
+import {usePlayerStore} from '@common/player/hooks/use-player-store';
+import clsx from 'clsx';
+import {usePlayerActions} from '@common/player/hooks/use-player-actions';
+import {Button} from '@ui/buttons/button';
+import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
+import {Channel, ChannelsSelect, Program, ProgramSelectProps} from '@app/live-tv/live-tv';
+import {Seekbar} from '@common/player/ui/controls/seeking/seekbar';
+
+
+export interface LiveTVVideoPlayerProps{
+  keyItem: string;
+  stream: string;
+  enableControls?: boolean;
+  vastUrl?: string;
+  setSelectedVideo: (video: string) => void;
+  streamink: string;
+  programs: Program[] | null;
+  selectedProgram: Program | null;
+  setSelectedProgram: (program: Program) => void;
+  channels: Channel[] | null;
+  selectedChannel: Channel | null;
+  setSelectedChannel: (channel: Channel) => void;
+
+}
 
 const VideoPlayerLiveTV = ({keyItem,
                                     stream,
                                     enableControls,
                                     vastUrl,
                                     setSelectedVideo,
-                                    streamink
-                                  }: {
-  keyItem: string;
-  stream: string;
-  enableControls?: boolean;
-  vastUrl?: string;
-  setSelectedVideo?: (video: string) => void;
-  streamink?: string;
-}) => {
+                                    streamink,
+                                    programs,
+                                    selectedProgram,
+                                    setSelectedProgram,
+                             channels,
+                             selectedChannel,
+                             setSelectedChannel
+                                  }:LiveTVVideoPlayerProps) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [adMediaUrl, setAdMediaUrl] = useState<string | null>(null);
@@ -274,6 +300,12 @@ const VideoPlayerLiveTV = ({keyItem,
       setSelectedVideo={setSelectedVideo}
       streamink={streamink}
       isLiveTvControls={true}
+
+      liveControls={{
+        bottom: <LiveTVControlsBottom setSelectedVideo={setSelectedVideo} streamink={streamink} />,
+        right: <LiveTVControlsRight programs={programs} selectedProgram={selectedProgram} setSelectedProgram={setSelectedProgram}  />,
+        left: <ChannelsSelect channels={channels} selectedChannel={selectedChannel} setSelectedChannel={setSelectedChannel}/>
+      }}
       enableControls={enableControls}
       key={keyItem}
       autoPlay={true}
@@ -299,4 +331,64 @@ const VideoPlayerLiveTV = ({keyItem,
     />)}
 </>
   )};
+
+interface ControlProps  {
+  setSelectedVideo: (video: string) => void;
+  streamink: string;
+}
+
 export default VideoPlayerLiveTV;
+
+
+export const LiveTVControlsBottom = ({setSelectedVideo,streamink}:ControlProps)=>{
+  const player = usePlayerActions();
+  const playerReady = usePlayerStore(s => s.providerReady);
+  const isFullscreen = usePlayerStore(s => s.isFullscreen);
+  const canFullscreen = usePlayerStore(s => s.canFullscreen);
+
+  if (playerReady) return(
+   <div className={clsx('h-34 w-full relative mx-auto mt-20')}>
+      <VideoControls
+        backward30={<SkipButton seconds={30} direction={'backward'} />}
+        forward30={<SkipButton seconds={30} direction={'forward'} />}
+        playButton={<PlayButton color="white" />}
+        forward1={<SkipButton seconds={60} direction={'forward'} />}
+        backward1={<SkipButton seconds={60} direction={'backward'} />}
+        forward5={<SkipButton seconds={300} direction={'forward'} />}
+        backward5={<SkipButton seconds={300} direction={'backward'} />}
+        setSelectedVideo={setSelectedVideo}
+        streamink={streamink}
+      />
+    </div>
+  )
+}
+
+
+
+export const LiveTVControlsRight: React.FC<ProgramSelectProps> = ({
+                                      programs,
+                                      selectedProgram,
+                                      setSelectedProgram,
+                                    }) => {
+  return (
+    <>
+      {programs &&
+        programs.map((program, index) => (
+          <div className={'relative'} key={index}>
+          <Button
+            variant={selectedProgram === program ? 'raised' : 'outline'}
+            color={selectedProgram === program ? 'chip' : 'chip'}
+            radius={'rounded-[0px]'}
+            className="!m-0 h-max min-h-38 w-full min-w-[290px] !justify-start text-wrap !p-12 !text-left lg:w-[290px] lg:max-w-[290px]"
+
+            onClick={() => setSelectedProgram(program)}
+          >
+            {ParseCustomTimestamp(program?.start)} &nbsp;&nbsp;
+            {program?.title?.text}
+          </Button>
+            <div className={' min-w-[290px]  lg:w-[290px] lg:max-w-[290px] h-max absolute bottom-[-13px] z-20'}> {selectedProgram === program && <Seekbar className={'!m-0'} trackColor="bg-white/40" />}</div>
+          </div>
+        ))}
+    </>
+  );
+};

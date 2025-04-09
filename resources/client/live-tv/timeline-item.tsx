@@ -71,7 +71,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
         <div>
 
           <div className={'mx-auto w-max my-4'}>{ParseCustomTimestamp(program.start)}</div>
-          <VideoPlayerLiveTV enableControls={false} keyItem={program.title.text} stream={`https://api.oho.ge/tv/streaming/dvr/?start=${program.start}&end=${program.stop}&id=${program.channel}&quality=low.m3u8`}/>
+          {/*<VideoPlayerLiveTV enableControls={false} keyItem={program.title.text} stream={`https://api.oho.ge/tv/streaming/dvr/?start=${program.start}&end=${program.stop}&id=${program.channel}&quality=low.m3u8`}/>*/}
           <div className={'mx-auto w-max my-4'}>{program.title.text}</div>
       </div>}>
       <div

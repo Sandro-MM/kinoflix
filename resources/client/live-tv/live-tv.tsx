@@ -51,7 +51,7 @@ export interface Channel {
   };
 }
 
-interface Program {
+export interface Program {
   title: {
     lang: string;
     text: string;
@@ -278,10 +278,16 @@ export function LiveTv() {
     <>
       {selectedVideo && (
         <VideoPlayerLiveTV
+          setSelectedChannel={setChannelToStateAndQuery}
+          selectedChannel={selectedChannel}
+          channels={channels}
+          selectedProgram={selectedProgram}
+          setSelectedProgram={setProgram}
+          programs={programs}
           setSelectedVideo={setSelectedVideo}
           vastUrl={selectedChannel?.vast.url}
           keyItem={selectedVideo}
-          streamink={selectedChannel?.stream}
+          streamink={selectedChannel?.stream!}
           stream={selectedVideo || ''}
         />
       )}
@@ -465,7 +471,7 @@ export const ChannelsSelectDesktop: React.FC<ChannelsSelectProps> = ({
   );
 };
 
-interface ProgramSelectProps {
+export interface ProgramSelectProps {
   programs: Program[] | null;
   selectedProgram: Program | null;
   setSelectedProgram: (program: Program) => void;

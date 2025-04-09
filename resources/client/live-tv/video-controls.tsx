@@ -30,10 +30,9 @@ export const VideoControls = ({
   return (
     <div
       className={
-        'absolute right-0 top-0 mt-12 flex h-34 w-max items-center justify-center gap-5 2xl:right-[10%]'
+        'absolute top-0 flex h-34 w-max items-center justify-center gap-5 2xl:right-[10%]'
       }
     >
-      {streamink}
       <Button
         variant={'flat'}
         color={'chip'}
