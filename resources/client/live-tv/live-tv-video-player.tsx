@@ -35,7 +35,7 @@ const VideoPlayerLiveTV = ({keyItem,
       const vastClient = new VASTClient();
       try {
         // 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml'
-        const response = await vastClient.get('https://statics.dmcdn.net/h/html/vast/simple-inline.xml');
+        const response = await vastClient.get(vastUrl);
         if (response) {
           console.log(response);
           const validAd = response.ads.find(
@@ -270,14 +270,14 @@ const VideoPlayerLiveTV = ({keyItem,
         </div>
       ) : (
     <SiteVideoPlayer
-      // setSelectedVideo={setSelectedVideo}
-      // streamink={streamink}
+      setSelectedVideo={setSelectedVideo}
+      streamink={streamink}
       isLiveTvControls={true}
       enableControls={enableControls}
       key={keyItem}
       autoPlay={true}
       video={{
-        src: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8',
+        src: stream,
         name: '123',
         type: 'video',
         category: 'full',
