@@ -12,6 +12,7 @@ import type {
   PlayerState,
   ProviderListeners,
 } from '@common/player/state/player-state';
+import {isIOS} from '@react-aria/utils';
 
 export interface AdSlice {
   adPlaying: boolean;
@@ -192,11 +193,11 @@ export const createAdSlice: StoreLice = (set, get, store) => {
       get().finishAd();
     },
 
+
     finishAd: async () => {
+      console.log('[finishAd] 🎞️ Resuming original media:', get()._previousCuedMedia);
       const previousMedia = get()._previousCuedMedia;
       const adType = get().adType;
-
-      console.log('[finishAd] 🎞️ Resuming original media:', previousMedia);
 
       set(state => {
         state.adPlaying = false;
@@ -210,17 +211,19 @@ export const createAdSlice: StoreLice = (set, get, store) => {
       });
 
       if (previousMedia && adType !== 'post-roll') {
-        // 🛑 Strip vastUrl to avoid re-triggering preroll ad
-        const mediaWithoutVast = {
-          ...previousMedia,
-          vastUrl: undefined,
-          meta: {
-            ...previousMedia.meta,
-            vastUrl: undefined
-          }
-        };
-        await get().cue(mediaWithoutVast);
-        await get().play();
+        await get().cue(previousMedia);
+
+        if (isIOS()) {
+          console.log('[finishAd] 📱 iOS detected — muting before play');
+          get().providerApi?.setMuted(true);
+        }
+
+        try {
+          await get().providerApi?.play();
+        } catch (err) {
+          console.warn('[finishAd] ❌ Failed to autoplay main media on iOS:', err);
+          // optional: show a tap-to-resume overlay
+        }
       }
     },
   };
