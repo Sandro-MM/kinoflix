@@ -23,11 +23,15 @@ import {
 } from '@common/player/state/fullscreen/fullscreen-slice';
 import {createPipSlice, PipSlice} from '@common/player/state/pip/pip-slice';
 import {subscribeWithSelector} from 'zustand/middleware';
+import {AdSlice, createAdSlice} from '@common/player/createAdSlice';
+
 
 export const createPlayerStore = (
   id: string | number,
   options: PlayerStoreOptions,
 ) => {
+
+
   // initialData from options should take priority over local storage data
   const initialData = deepMerge(
     getPlayerStateFromLocalStorage(id, options),
@@ -38,9 +42,9 @@ export const createPlayerStore = (
     _setInLocalStorage(`player.${id}.${key}`, value);
   };
 
-  return createStore<PlayerState & FullscreenSlice & PipSlice>()(
+  return createStore<PlayerState & FullscreenSlice & PipSlice & AdSlice>()(
     subscribeWithSelector(
-      immer((set, get, store) => {
+      immer((set, get, store,) => {
         const listeners = new Set<Partial<ProviderListeners>>();
         const internalListeners: Partial<ProviderListeners> = {
           play: () => {
@@ -120,17 +124,55 @@ export const createPlayerStore = (
           posterLoaded: ({url}) => {
             set({posterUrl: url});
           },
-          providerReady: () => {
+          providerReady: async () => {
+            console.log('[providerReady] ✅ Called');
             const provider = get().providerApi;
-            if (provider) {
-              provider.setVolume(get().volume);
-              provider.setMuted(get().muted);
-              if (options.autoPlay) {
-                provider.play();
-              }
-              set({providerReady: true});
+            const media = get().cuedMedia;
+            const getAdFor = get().options?.getAdFor;
+
+            console.log('[providerReady] 🎛️ providerApi:', provider);
+            console.log('[providerReady] 🎵 cuedMedia:', media);
+
+            if (!provider) {
+              console.warn('[providerReady] ❌ No providerApi found, aborting...');
+              return;
             }
+
+            provider.setVolume(get().volume);
+            provider.setMuted(get().muted);
+
+            if (!media) {
+              console.warn('[providerReady] ⚠️ No cuedMedia available, aborting preroll...');
+              return;
+            }
+
+            // ✅ No need to re-cue here if media is already cued
+            // Only play ad if needed
+            if (media.vastUrl && getAdFor) {
+              try {
+                const ad = await getAdFor('pre-roll', media);
+                console.log('[providerReady] 🎬 Ad fetched:', ad);
+
+                if (ad) {
+                  console.log('[providerReady] ▶️ Playing preroll ad');
+                  await get().playAd(ad, 'pre-roll', media);
+                  return; // ⛔ Don't start main media until ad finishes
+                }
+              } catch (e) {
+                console.error('[providerReady] ⚠️ Failed to fetch/play preroll ad:', e);
+              }
+            }
+
+            // 🚀 Autoplay main media if no ad
+            if (get().options.autoPlay) {
+              console.log('[providerReady] ⏯️ Autoplaying media...');
+              await provider.play();
+            }
+
+            set({ providerReady: true });
+            console.log('[providerReady] ✅ Provider is ready');
           },
+
         };
 
         const queue = playerQueue(get);
@@ -144,6 +186,7 @@ export const createPlayerStore = (
           options,
           ...createFullscreenSlice(set, get, store, listeners),
           ...createPipSlice(set, get, store, listeners),
+          ...createAdSlice(set, get, store,listeners),
           originalQueue: initialQueue,
           shuffledQueue: initialData.state?.shuffling
             ? shuffleArray(initialQueue)
@@ -314,46 +357,92 @@ export const createPlayerStore = (
             }
           },
           cue: async media => {
-            if (isSameMedia(media, get().cuedMedia)) return;
+            const current = get().cuedMedia;
+            console.log('[cue] 🔄 Comparing with current cuedMedia:', current);
 
-            get().emit('beforeCued', {previous: get().cuedMedia});
+            if (isSameMedia(media, current)) {
+              console.log('[cue] ⏭️ Skipping cue (same media)');
+              return;
+            }
 
-            return new Promise((resolve, reject) => {
+            console.log('[cue] 🎯 Cueing new media:', media);
+
+            const normalizedMedia = {
+              ...media,
+              vastUrl: media.vastUrl || media.meta?.vastUrl,
+              poster: media.poster || media.meta?.poster,
+            };
+
+            get().emit('beforeCued', { previous: get().cuedMedia });
+
+            return new Promise(async (resolve, reject) => {
               const previousProvider = get().providerName;
 
-              // wait until media is cued on provider or 3 seconds
-              const timeoutId = setTimeout(() => {
-                unsubscribe();
-                resolve();
-              }, 3000);
-              const unsubscribe = get().subscribe({
-                cued: () => {
-                  clearTimeout(timeoutId);
-                  unsubscribe();
-                  resolve();
-                },
-                error: e => {
-                  clearTimeout(timeoutId);
-                  unsubscribe();
-                  reject('Could not cue media');
-                },
-              });
-
               set({
-                cuedMedia: media,
-                posterUrl: media.poster,
-                providerName: media.provider,
-                providerReady: previousProvider === media.provider,
-                streamType: 'streamType' in media ? media.streamType : null,
+                cuedMedia: normalizedMedia,
+                posterUrl: normalizedMedia.poster,
+                providerName: normalizedMedia.provider,
+                providerReady: previousProvider === normalizedMedia.provider,
+                streamType: 'streamType' in normalizedMedia ? normalizedMedia.streamType : null,
               });
 
-              if (media) {
-                options.setMediaSessionMetadata?.(media);
+              if (normalizedMedia && options.setMediaSessionMetadata) {
+                options.setMediaSessionMetadata(normalizedMedia);
               }
 
               if (options.persistQueueInLocalStorage) {
-                setInLocalStorage('cuedMediaId', media.id);
+                setInLocalStorage('cuedMediaId', normalizedMedia.id);
               }
+
+              const waitForProviderApi = async () => {
+                const maxAttempts = 30;
+                let attempts = 0;
+
+                while (!get().providerApi && attempts < maxAttempts) {
+                  await new Promise(res => setTimeout(res, 100));
+                  attempts++;
+                }
+
+                if (!get().providerApi) {
+                  console.warn('[cue] providerApi was not set after waiting.');
+                  return resolve();
+                }
+
+                // ✅ If there's a VAST ad to play for this media
+                if (normalizedMedia.vastUrl && options.getAdFor) {
+                  try {
+                    const ad = await options.getAdFor('pre-roll', normalizedMedia);
+                    if (ad) {
+                      console.log('[cue] 🎬 Playing preroll ad:', ad);
+                      // Pass normalizedMedia as the original media to resume
+                      await get().playAd(ad, 'pre-roll', normalizedMedia);
+                      return resolve();
+                    }
+                  } catch (err) {
+                    console.error('[cue] ⚠️ Error playing preroll ad:', err);
+                  }
+                }
+
+                const timeoutId = setTimeout(() => {
+                  unsubscribe();
+                  resolve();
+                }, 3000);
+
+                const unsubscribe = get().subscribe({
+                  cued: () => {
+                    clearTimeout(timeoutId);
+                    unsubscribe();
+                    resolve();
+                  },
+                  error: e => {
+                    clearTimeout(timeoutId);
+                    unsubscribe();
+                    reject('Could not cue media');
+                  },
+                });
+              };
+
+              waitForProviderApi();
             });
           },
           async overrideQueue(
@@ -434,7 +523,7 @@ export const createPlayerStore = (
             document.removeEventListener('keydown', keybindsHandler);
           },
           init: async () => {
-            // add initial and listeners from options, these will be present for the entire lifetime of the player
+            console.log('[player-store] 🔁 init called');
             get().initFullscreen();
 
             listeners.add(internalListeners);
@@ -442,14 +531,26 @@ export const createPlayerStore = (
               listeners.add(options.listeners as Partial<ProviderListeners>);
             }
 
-            const mediaId =
-              initialData.cuedMediaId || initialData.queue?.[0]?.id;
-            const mediaToCue = initialData.queue?.find(
-              media => media.id === mediaId,
-            );
+            const mediaId = initialData.cuedMediaId || initialData.queue?.[0]?.id;
+            console.log('[player-store] 🎯 mediaId to cue:', mediaId);
+
+            const mediaToCue = initialData.queue?.find(media => media.id === mediaId);
+            console.log('[player-store] 📼 mediaToCue:', mediaToCue);
+
             if (mediaToCue) {
-              await get().cue(mediaToCue);
+              await get().cue(mediaToCue); // ✅ must run BEFORE getting ad
+
+              if (options.getAdFor) {
+                const preRoll = await options.getAdFor('pre-roll', mediaToCue);
+                console.log('[player-store] 🍿 preroll returned:', preRoll);
+
+                if (preRoll) {
+                  await get().playAd(preRoll, 'pre-roll');
+                  return; // ⛔ don't play main media again until ad ends
+                }
+              }
             }
+
             initPlayerMediaSession(get, options);
             document.addEventListener('keydown', keybindsHandler);
           },

@@ -13,4 +13,7 @@ export interface PlayerProviderApi {
   getCurrentTime: () => number;
   getSrc: () => string | undefined;
   internalProviderApi?: any;
+  onTimeUpdate?: (currentTime: number) => void;
+  onEnded?: () => void;
+  onClick?: () => void;
 }

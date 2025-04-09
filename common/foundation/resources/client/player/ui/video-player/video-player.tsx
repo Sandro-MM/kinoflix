@@ -57,26 +57,57 @@ export function VideoPlayer({
    isLiveTvControls,
    setSelectedVideo,
    streamink
-}: Props) {
-  return (
-    <PlayerContext
-      id={id}
-      options={{
-        autoPlay,
-        listeners,
-        onDestroy,
-        onBeforePlayNext,
-        onBeforePlayPrevious,
-        initialData: {
-          queue: queue ? queue : [mediaItemFromSrc(src!)],
-          cuedMediaId,
-        },
-      }}
-    >
-      <QueueOverrider src={src} queue={queue} />
-      <PlayerLayout setSelectedVideo={setSelectedVideo} streamink={streamink} isLiveTvControls={isLiveTvControls} enableControls={enableControls} apiRef={apiRef} rightActions={rightActions} />
-    </PlayerContext>
-  );
+}: Props){
+
+  const initialQueue = queue ? queue : [mediaItemFromSrc(src!)];
+
+console.log('[VideoPlayer] 🚀 Initial media queue:', initialQueue);
+console.log('[VideoPlayer] 🔁 cuedMediaId:', cuedMediaId);
+
+return (
+  <PlayerContext
+    id={id}
+    options={{
+      autoPlay,
+      listeners,
+      onDestroy,
+      onBeforePlayNext,
+      onBeforePlayPrevious,
+      getAdFor: async (type, media) => {
+        console.log('[getAdFor] type:', type);
+        console.log('[getAdFor] media:', media);
+
+        if (type === 'pre-roll' && media?.vastUrl) {
+          console.log('[getAdFor] Returning preroll ad for vastUrl:', media.vastUrl);
+          return {
+            id: `vast-preroll-${Date.now()}`,
+            provider: 'htmlVideo',
+            src: '',
+            vastUrl: media.vastUrl,
+            poster: media?.poster,
+          };
+        }
+
+        console.log('[getAdFor] No preroll ad found.');
+        return null;
+      },
+      initialData: {
+        queue: initialQueue,
+        cuedMediaId,
+      },
+    }}
+  >
+    <QueueOverrider src={src} queue={queue} />
+    <PlayerLayout
+      setSelectedVideo={setSelectedVideo}
+      streamink={streamink}
+      isLiveTvControls={isLiveTvControls}
+      enableControls={enableControls}
+      apiRef={apiRef}
+      rightActions={rightActions}
+    />
+  </PlayerContext>
+);
 }
 
 interface PlayerLayoutProps {
@@ -265,6 +296,7 @@ interface QueueOverriderProps {
   src?: string;
   queue?: MediaItem[];
 }
+// @ts-ignore
 function QueueOverrider({src, queue}: QueueOverriderProps) {
   const {getState, overrideQueue} = usePlayerActions();
 

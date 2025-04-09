@@ -5,6 +5,7 @@ interface BaseMediaItem<T = any> {
   groupId?: string | number;
   provider: 'youtube' | 'htmlAudio' | 'htmlVideo' | 'hls' | 'dash';
   meta?: T;
+  vastUrl?: string;
   initialTime?: number;
   poster?: string;
   captions?: {

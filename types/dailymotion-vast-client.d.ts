@@ -1,6 +1,7 @@
 declare module '@dailymotion/vast-client' {
   import {EventEmitter} from "events";
   export class VASTTracker extends EventEmitter {
+    clickThroughURLTemplate: any;
     /**
      * The VAST tracker constructor will process the tracking URLs of the selected ad/creative and returns an instance of VASTTracker.
      */

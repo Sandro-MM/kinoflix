@@ -1,10 +1,11 @@
 import {StoreApi} from 'zustand';
 import {useContext} from 'react';
 import {PlayerStoreContext} from '@common/player/player-context';
-import {PlayerState} from '@common/player/state/player-state';
+import {AdState, PlayerState} from '@common/player/state/player-state';
 import {FullscreenSlice} from '@common/player/state/fullscreen/fullscreen-slice';
 import {PipSlice} from '@common/player/state/pip/pip-slice';
 import {useStoreWithEqualityFn} from 'zustand/traditional';
+import {AdSlice} from '@common/player/createAdSlice';
 
 type ExtractState<S> = S extends {
   getState: () => infer T;
@@ -16,7 +17,7 @@ type UsePlayerStore = {
   (): ExtractState<StoreApi<PlayerState>>;
   <U>(
     selector: (
-      state: ExtractState<StoreApi<PlayerState & FullscreenSlice & PipSlice>>
+      state: ExtractState<StoreApi<PlayerState & FullscreenSlice & PipSlice & AdSlice>>
     ) => U,
     equalityFn?: (a: U, b: U) => boolean
   ): U;

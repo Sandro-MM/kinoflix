@@ -17,6 +17,7 @@ type Listeners = Omit<ListenersWithState, 'error'> & {
 };
 
 export interface PlayerStoreOptions {
+  getAdFor?: (type: 'pre-roll' | 'mid-roll' | 'post-roll' | 'banner', media: MediaItem) => Promise<MediaItem | null>;
   persistQueueInLocalStorage?: boolean;
   autoPlay?: boolean;
   initialData?: PlayerInitialData;
@@ -37,3 +38,4 @@ export interface PlayerStoreOptions {
     useCookies?: boolean;
   };
 }
+

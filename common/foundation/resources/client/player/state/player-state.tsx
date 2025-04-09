@@ -3,6 +3,7 @@ import type {createPlayerStore} from '@common/player/state/player-store';
 import {PlayerEvents} from '@common/player/state/player-events';
 import {PlayerProviderApi} from '@common/player/state/player-provider-api';
 import {PlayerStoreOptions} from '@common/player/state/player-store-options';
+import {VASTTracker} from '@dailymotion/vast-client';
 
 export type RepeatMode = 'one' | 'all' | false;
 
@@ -30,6 +31,11 @@ export interface AudioTrack {
 }
 
 export interface PlayerState {
+  timeLeft: number;
+  canSkip: boolean;
+  setTimeLeft?: (time: number) => void;
+  setCanSkip?: (canSkip: boolean) => void;
+  finishAd(): unknown;
   options: PlayerStoreOptions;
 
   // queue
@@ -100,7 +106,7 @@ export interface PlayerState {
   seek: (time: number | string) => void;
   overrideQueue: (
     mediaItems: MediaItem[],
-    queuePointer?: number
+    queuePointer?: number,
   ) => Promise<void>;
   appendToQueue: (mediaItems: MediaItem[], afterCuedMedia?: boolean) => void;
   removeFromQueue: (mediaItems: MediaItem[]) => void;
@@ -113,4 +119,20 @@ export interface PlayerState {
   ) => void;
   destroy: () => void;
   init: () => void;
+}
+
+export interface AdState {
+  adPlaying: boolean;
+  adType: 'pre-roll' | 'mid-roll' | 'post-roll' | 'banner' | null;
+  currentAdMedia?: MediaItem;
+  vastTracker?: VASTTracker;
+  skipTime: number;
+  timeLeft: number;
+  canSkip: boolean;
+  _previousCuedMedia?: MediaItem;
+  playAd: (ad: MediaItem, adType: AdState['adType']) => Promise<void>;
+  finishAd: () => void;
+  skipAd: () => void;
+  setTimeLeft?: (time: number) => void;
+  setCanSkip?: (canSkip: boolean) => void;
 }

@@ -551,18 +551,18 @@ export const VideoPlayerLiveTV = ({keyItem,
       isLiveTvControls={true}
       enableControls={enableControls}
       key={keyItem}
-      vastUrl={vastUrl}
-      autoPlay={false}
+      autoPlay={true}
       video={{
         src: stream,
         name: '123',
-        type: 'stream',
+        type: 'video',
         category: 'full',
         origin: 'local',
         quality: '480',
         approved: true,
         user_id: 1,
         season_num: 1,
+        vastUrl:vastUrl,
         episode_num: 1,
         title_id: 1,
         model_type: 'video',

@@ -13,12 +13,14 @@ export interface Video extends VotableModel {
   thumbnail?: string;
   origin: 'local' | 'tmdb';
   quality: string;
+  vastUrl?: string;
   approved: boolean;
   title?: Title;
   episode?: Episode;
   user_id: number;
   season_num: number;
   episode_num: number;
+
   title_id: number;
   captions?: VideoCaption[];
   language?: string;
