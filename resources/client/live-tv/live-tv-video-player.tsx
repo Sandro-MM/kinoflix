@@ -275,9 +275,9 @@ const VideoPlayerLiveTV = ({keyItem,
       isLiveTvControls={true}
       enableControls={enableControls}
       key={keyItem}
-      autoPlay={false}
+      autoPlay={true}
       video={{
-        src: stream,
+        src: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8',
         name: '123',
         type: 'video',
         category: 'full',

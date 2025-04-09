@@ -14,9 +14,11 @@ export function guessPlayerProvider(src: string): MediaItem['provider'] {
   } else if (audioRegex.test(src)) {
     return 'htmlAudio';
   } else if (hlsRegex.test(src)) {
-
+    if (IS_IOS) {
+      return 'htmlVideo';
+    } else {
       return 'hls';
-
+    }
   } else if (dashRegex.test(src)) {
     return 'dash';
   } else {
