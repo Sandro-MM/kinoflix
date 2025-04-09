@@ -128,14 +128,14 @@ function PlayerLayout({apiRef, rightActions,enableControls = true,isLiveTvContro
 
   const [elapsed, setElapsed] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setElapsed(actions.getCurrentTime());
-      console.log(actions.getCurrentTime(),'timeEllapsed');
-    }, 1000); // update every second
-
-    return () => clearInterval(interval);
-  }, [actions.getCurrentTime]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setElapsed(actions.getCurrentTime());
+  //     console.log(actions.getCurrentTime(),'timeEllapsed');
+  //   }, 1000); // update every second
+  //
+  //   return () => clearInterval(interval);
+  // }, [actions.getCurrentTime]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -303,17 +303,21 @@ function QueueOverrider({src, queue}: QueueOverriderProps) {
   const queueKey = queue?.map(item => item.id).join('-') ?? '';
   const previousKey = usePrevious(queueKey);
 
-  // override queue when any of specified queue item id or order changes
   useEffect(() => {
     if (queue && previousKey && queueKey && previousKey !== queueKey) {
+      console.log('[QueueOverrider] 🔁 Queue changed');
+      console.log('[QueueOverrider] 🧾 Previous:', previousKey);
+      console.log('[QueueOverrider] 🧾 New:', queueKey);
+      console.log('[QueueOverrider] 🎞️ Queue items:', queue);
       overrideQueue(queue);
     }
   }, [queueKey, previousKey, queue, overrideQueue]);
 
-  // override queue when src changes
   useEffect(() => {
     if (src && getState().cuedMedia?.src !== src) {
-      overrideQueue([mediaItemFromSrc(src)]);
+      const mediaFromSrc = mediaItemFromSrc(src);
+      console.log('[QueueOverrider] 🌐 src changed → cueing new media from src:', mediaFromSrc);
+      overrideQueue([mediaFromSrc]);
     }
   }, [src, getState, overrideQueue]);
 

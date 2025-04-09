@@ -13,6 +13,7 @@ import type {
   ProviderListeners,
 } from '@common/player/state/player-state';
 import {isIOS} from '@react-aria/utils';
+import {isiOS} from '@tiptap/react';
 
 export interface AdSlice {
   adPlaying: boolean;
@@ -200,7 +201,6 @@ export const createAdSlice: StoreLice = (set, get, store) => {
       const adType = get().adType;
 
       set(state => {
-        state.adPlaying = false;
         state.adType = null;
         state.currentAdMedia = undefined;
         state.vastTracker = undefined;
@@ -208,22 +208,23 @@ export const createAdSlice: StoreLice = (set, get, store) => {
         state.timeLeft = 0;
         state.canSkip = false;
         state._previousCuedMedia = undefined;
+        state.adPlaying = false;
+        state.controlsVisible= true;
       });
 
+
       if (previousMedia && adType !== 'post-roll') {
-        await get().cue(previousMedia);
-
-        if (isIOS()) {
-          console.log('[finishAd] 📱 iOS detected — muting before play');
-          get().providerApi?.setMuted(true);
-        }
-
-        try {
-          await get().providerApi?.play();
-        } catch (err) {
-          console.warn('[finishAd] ❌ Failed to autoplay main media on iOS:', err);
-          // optional: show a tap-to-resume overlay
-        }
+        // 🛑 Strip vastUrl to avoid re-triggering preroll ad
+        const mediaWithoutVast = {
+          ...previousMedia,
+          vastUrl: undefined,
+          meta: {
+            ...previousMedia.meta,
+            vastUrl: undefined
+          }
+        };
+        await get().cue(mediaWithoutVast);
+        // await get().play();
       }
     },
   };
