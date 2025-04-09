@@ -186,116 +186,52 @@ const VideoPlayerLiveTV = ({keyItem,
 
 
   return (
-<>
-    {adMediaUrl ? (
-        <div className="relative flex h-full w-full items-center justify-center bg-twitter">
-          <div className="relative flex h-full w-full items-center justify-center">
-            <video
-              muted={muted}
-              autoPlay={true}
-              playsInline
-              ref={videoRef}
-              controls={false}
+    <>
+      {/* Ad video player, conditionally visible */}
+      <div style={{ display: adMediaUrl ? 'block' : 'none' }}>
+        <video
+          muted={muted}
+          autoPlay={true}
+          playsInline
+          ref={videoRef}
+          controls={false}
+          className="object-contain"
+          style={{ width: '100%', height: '100%' }}
+        >
+          {adMediaUrl && <source src={adMediaUrl} type="video/mp4" />}
+        </video>
+        {/* Your ad controls */}
+        <button onClick={handleSkip}>Skip Ad</button>
+      </div>
 
-              className="object-contain"
-              style={{
-                width: '100%',
-                height: '100%',
-                maxWidth: '100vw',
-                maxHeight: '100vh',
-              }}
-            >
-              <source src={adMediaUrl} type="video/mp4" />
-            </video>
-            <div className={'absolute bottom-16 right-16 flex items-center justify-center gap-12'}>
-              <button
-                onClick={() => setMuted(prev => !prev)}
-                className={
-                  'flex items-center justify-center gap-14 rounded bg-background px-22 py-12'
-                }
-                style={{
-                  border: 'none',
-                }}
-              >
-                {!muted ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 15"
-                    width="20"
-                    height="15"
-                    className="svg-icon--volume-up svg-icon"
-                  >
-                    <path d="M0 5h4l5-4v13l-5-4H0V5zm20 2.5c0 1.4-.28 2.78-.82 4.06-.55 1.3-1.34 2.46-2.35 3.44l-1.33-1.4c.8-.8 1.44-1.76 1.87-2.8.42-1.05.64-2.17.63-3.3 0-1.13-.2-2.25-.63-3.3-.43-1.04-1.07-2-1.87-2.8L16.83 0c1 .98 1.8 2.15 2.35 3.44.54 1.28.82 2.66.82 4.06zm-4.67 0c0 .78-.15 1.55-.45 2.27-.3.73-.74 1.38-1.3 1.93l-1.4-1.4c.36-.37.65-.8.85-1.28.2-.48.3-1 .3-1.52s-.1-1.04-.3-1.52c-.2-.48-.5-.9-.86-1.28l1.4-1.4c.57.55 1 1.2 1.3 1.93.3.72.47 1.5.46 2.27z"></path>
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="17"
-                    height="13"
-                    className="svg-icon--volume-off svg-icon"
-                  >
-                    <path d="M0 4h4l5-4v13L4 9H0V4zm17 1l-1-1-1.5 1.5L13 4l-1 1 1.5 1.5L12 8l1 1 1.5-1.5L16 9l1-1-1.5-1.5L17 5z"></path>
-                  </svg>
-                )}
-              </button>
-
-              {timeLeft !== null && (
-                <button
-                  disabled={!canSkip}
-                  onClick={handleSkip}
-                  className={
-                    'flex items-center justify-center gap-14 rounded bg-background px-22 py-12'
-                  }
-                  style={{
-                    cursor: canSkip ? 'pointer' : 'default',
-                    border: 'none',
-                  }}
-                >
-                  {timeLeft > 0 ? `Skip in ${timeLeft.toFixed(0)}` : 'Skip Ad'}
-
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 9 10"
-                    width="9"
-                    height="10"
-                    className="svg-icon--step-forward svg-icon"
-                  >
-                    <path d="M0 0v10l7-5-7-5zm7 0h2v10H7V0z"></path>
-                  </svg>
-                </button>
-
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-    <SiteVideoPlayer
-      // setSelectedVideo={setSelectedVideo}
-      // streamink={streamink}
-      isLiveTvControls={true}
-      enableControls={enableControls}
-      key={keyItem}
-      autoPlay={false}
-      video={{
-        src: stream,
-        name: '123',
-        type: 'video',
-        category: 'full',
-        origin: 'local',
-        quality: '480',
-        approved: true,
-        user_id: 1,
-        season_num: 1,
-        episode_num: 1,
-        title_id: 1,
-        model_type: 'video',
-        id: 1,
-        upvotes: 1,
-        downvotes: 1,
-        score: 1,
-      }}
-      mediaItemId={`123123`}
-    />)}
-</>
-  )};
+      {/* Main SiteVideoPlayer, always mounted but hidden during ad */}
+      <div style={{ display: adMediaUrl ? '' : 'block' }}>
+        <SiteVideoPlayer
+          isLiveTvControls={true}
+          enableControls={enableControls}
+          key={keyItem}
+          autoPlay={false}
+          video={{
+            src: stream,
+            name: '123',
+            type: 'video',
+            category: 'full',
+            origin: 'local',
+            quality: '480',
+            approved: true,
+            user_id: 1,
+            season_num: 1,
+            episode_num: 1,
+            title_id: 1,
+            model_type: 'video',
+            id: 1,
+            upvotes: 1,
+            downvotes: 1,
+            score: 1,
+          }}
+          mediaItemId={`123123`}
+        />
+      </div>
+    </>
+  );};
 export default VideoPlayerLiveTV;
