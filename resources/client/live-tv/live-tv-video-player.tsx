@@ -188,21 +188,21 @@ const VideoPlayerLiveTV = ({keyItem,
   return (
     <>
       {/* Ad video player, conditionally visible */}
-      <div style={{ display: adMediaUrl ? 'block' : 'none' }}>
-        <video
-          muted={muted}
-          autoPlay={true}
-          playsInline
-          ref={videoRef}
-          controls={false}
-          className="object-contain"
-          style={{ width: '100%', height: '100%' }}
-        >
-          {adMediaUrl && <source src={adMediaUrl} type="video/mp4" />}
-        </video>
-        {/* Your ad controls */}
-        <button onClick={handleSkip}>Skip Ad</button>
-      </div>
+      {/*<div style={{ display: adMediaUrl ? 'block' : 'none' }}>*/}
+      {/*  <video*/}
+      {/*    muted={muted}*/}
+      {/*    autoPlay={true}*/}
+      {/*    playsInline*/}
+      {/*    ref={videoRef}*/}
+      {/*    controls={false}*/}
+      {/*    className="object-contain"*/}
+      {/*    style={{ width: '100%', height: '100%' }}*/}
+      {/*  >*/}
+      {/*    {adMediaUrl && <source src={adMediaUrl} type="video/mp4" />}*/}
+      {/*  </video>*/}
+      {/*  /!* Your ad controls *!/*/}
+      {/*  <button onClick={handleSkip}>Skip Ad</button>*/}
+      {/*</div>*/}
 
       {/* Main SiteVideoPlayer, always mounted but hidden during ad */}
       <div style={{ display: adMediaUrl ? '' : 'block' }}>
@@ -210,11 +210,11 @@ const VideoPlayerLiveTV = ({keyItem,
           isLiveTvControls={true}
           enableControls={enableControls}
           key={keyItem}
-          autoPlay={false}
+          autoPlay={true}
           video={{
             src: stream,
             name: '123',
-            type: 'video',
+            type: 'stream',
             category: 'full',
             origin: 'local',
             quality: '480',
