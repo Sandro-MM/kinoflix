@@ -8,37 +8,45 @@ import {useHtmlMediaApi} from '@common/player/providers/html-media/use-html-medi
 import {HlsMediaItem} from '@common/player/media-item';
 import {AudioTrack} from '@common/player/state/player-state';
 
+function isIOS(): boolean {
+  return (
+    ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
+    (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+  );
+}
+
 export default function HlsProvider() {
   const store = useContext(PlayerStoreContext);
   const cuedMedia = usePlayerStore(s => s.cuedMedia) as HlsMediaItem;
 
-  // html medial element state
   const videoRef = useRef<HTMLVideoElement>(null!);
   const htmlMediaState = useHtmlMediaInternalState(videoRef);
   const htmlMediaEvents = useHtmlMediaEvents(htmlMediaState);
   const htmlMediaApi = useHtmlMediaApi(htmlMediaState);
 
-  // need both so we can "loadSource" when hls is ready, while keeping other callbacks stable
   const hls = useRef<Hls | undefined>();
   const [hlsReady, setHlsReady] = useState(false);
 
   const destroyHls = useCallback(() => {
-    if (hls) {
-      hls.current?.destroy();
+    if (hls.current) {
+      hls.current.destroy();
       hls.current = undefined;
       setHlsReady(false);
     }
   }, []);
 
   const setupHls = useCallback(() => {
+    if (isIOS()) {
+      console.log('[HlsProvider] 🍏 Native HLS on iOS, skipping hls.js init');
+      return;
+    }
+
     if (!Hls.isSupported()) {
       store.getState().emit('error', {fatal: true});
       return;
     }
 
-    const hlsInstance = new Hls({
-      startLevel: -1,
-    });
+    const hlsInstance = new Hls({startLevel: -1});
 
     hlsInstance.on(Hls.Events.ERROR, (event: any, data: any) => {
       if (data.fatal) {
@@ -54,17 +62,14 @@ export default function HlsProvider() {
             break;
         }
       }
-
       store.getState().emit('error', {sourceEvent: data, fatal: data.fatal});
     });
 
     hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
       if (!hlsInstance.levels?.length) return;
-
       store.getState().emit('playbackQualities', {
         qualities: ['auto', ...hlsInstance.levels.map(levelToPlaybackQuality)],
       });
-
       store.getState().emit('playbackQualityChange', {quality: 'auto'});
     });
 
@@ -75,44 +80,36 @@ export default function HlsProvider() {
       }
     });
 
-    hlsInstance.on(
-      Hls.Events.LEVEL_LOADED,
-      (eventType: string, data: LevelLoadedData) => {
-        if (!store.getState().providerReady) {
-          const {type, live, totalduration: duration} = data.details;
-          const inferredStreamType = live
-            ? type === 'EVENT' && Number.isFinite(duration)
-              ? 'live:dvr'
-              : 'live'
-            : 'on-demand';
-          store.getState().emit('streamTypeChange', {
-            streamType:
-              (store.getState().cuedMedia as HlsMediaItem)?.streamType ||
-              inferredStreamType,
-          });
-          store.getState().emit('durationChange', {duration});
+    hlsInstance.on(Hls.Events.LEVEL_LOADED, (_evt: string, data: LevelLoadedData) => {
+      if (!store.getState().providerReady) {
+        const {type, live, totalduration: duration} = data.details;
+        const inferredStreamType = live
+          ? type === 'EVENT' && Number.isFinite(duration)
+            ? 'live:dvr'
+            : 'live'
+          : 'on-demand';
+        store.getState().emit('streamTypeChange', {
+          streamType:
+            (store.getState().cuedMedia as HlsMediaItem)?.streamType ||
+            inferredStreamType,
+        });
+        store.getState().emit('durationChange', {duration});
 
-          const audioTracks: AudioTrack[] = hlsInstance.audioTracks.map(
-            track => ({
-              id: track.id,
-              label: track.name,
-              language: track.lang || '',
-              kind: 'main',
-            }),
-          );
-          store.getState().emit('audioTracks', {tracks: audioTracks});
-        }
-      },
-    );
+        const audioTracks: AudioTrack[] = hlsInstance.audioTracks.map(track => ({
+          id: track.id,
+          label: track.name,
+          language: track.lang || '',
+          kind: 'main',
+        }));
+        store.getState().emit('audioTracks', {tracks: audioTracks});
+      }
+    });
 
     hlsInstance.attachMedia(videoRef.current);
-
     hls.current = hlsInstance;
-    // trigger initial load source
     setHlsReady(true);
   }, [destroyHls, store]);
 
-  // setup and destroy hls on mount and unmount
   useEffect(() => {
     setupHls();
     return () => {
@@ -120,19 +117,20 @@ export default function HlsProvider() {
     };
   }, [setupHls, destroyHls]);
 
-  // load source via hls when media src changes and hls is ready
   useEffect(() => {
     if (
+      !isIOS() &&
       hls.current &&
       cuedMedia?.src &&
       (hls.current as any).url !== cuedMedia?.src
     ) {
+      console.log('[HlsProvider] 🎞️ hls.loadSource:', cuedMedia.src);
       hls.current.loadSource(cuedMedia.src);
     }
   }, [cuedMedia?.src, hlsReady]);
 
   useEffect(() => {
-    if (!hlsReady) return;
+    if (!hlsReady && !isIOS()) return;
     store.setState({
       providerApi: {
         ...htmlMediaApi,
@@ -157,6 +155,7 @@ export default function HlsProvider() {
       ref={videoRef}
       playsInline
       poster={cuedMedia?.poster}
+      src={isIOS() ? cuedMedia?.src : undefined}
       {...htmlMediaEvents}
     />
   );
