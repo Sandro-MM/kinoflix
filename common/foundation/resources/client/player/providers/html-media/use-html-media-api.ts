@@ -64,9 +64,22 @@ export function useHtmlMediaApi({
       resetVideoElement: () => {
         const video = ref.current;
         if (!video) return;
-        console.log('[HtmlVideoProvider] 🧹 Resetting <video> element');
+
+        console.log('[HtmlVideoProvider] 🧹 Resetting video element');
         video.pause();
         video.removeAttribute('src');
+        video.load();
+      },
+
+      forceSetSrc: (src: string) => {
+        const video = ref.current;
+        if (!video) return;
+
+        console.log('[HtmlVideoProvider] 🔁 Forcing src reset to:', src);
+        video.pause();
+        video.removeAttribute('src');
+        video.load(); // Detach current media
+        video.src = src; // Force-attach new one
         video.load();
       },
 

@@ -224,21 +224,29 @@ export const createAdSlice: StoreLice = (set, get, store) => {
           }
         };
         setTimeout(async () => {
-          if (isiOS()) {
-            console.log('[finishAd] 🧽 Resetting video element for iOS');
-            get().providerApi?.resetVideoElement?.();
-          }
 
-          await get().cue(mediaWithoutVast);
+            console.log('[finishAd] 🧽 Resetting and force-setting main media for iOS');
 
-          if (isiOS()) {
+            // Force set src on the native <video> tag
+            const src = mediaWithoutVast.src || mediaWithoutVast.meta?.src;
+            if (src) {
+              get().providerApi?.forceSetSrc?.(src);
+            }
+
+            // Cue media in Zustand store (this updates internal state)
+            await get().cue(mediaWithoutVast);
+
+            // Attempt autoplay
             try {
               await get().play();
             } catch (e) {
-              console.warn('[finishAd] iOS autoplay failed, waiting for user gesture');
+              console.warn('[finishAd] iOS autoplay failed, waiting for user interaction');
             }
-          }
-        }, 300);
+
+            // Normal non-iOS flow
+            // await get().cue(mediaWithoutVast);
+
+        }, 500);
         // await get().play();
       }
     },

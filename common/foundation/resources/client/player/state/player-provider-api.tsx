@@ -17,4 +17,5 @@ export interface PlayerProviderApi {
   onEnded?: () => void;
   onClick?: () => void;
   resetVideoElement?: () => void;
+  forceSetSrc?: (src:string) => void;
 }
