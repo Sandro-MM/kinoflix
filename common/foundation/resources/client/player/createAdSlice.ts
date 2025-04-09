@@ -223,7 +223,16 @@ export const createAdSlice: StoreLice = (set, get, store) => {
             vastUrl: undefined
           }
         };
-        await get().cue(mediaWithoutVast);
+        setTimeout(async () => {
+          await get().cue(mediaWithoutVast);
+          if (isiOS()) {
+            try {
+              await get().play();
+            } catch (e) {
+              console.warn('[finishAd] iOS autoplay failed, waiting for user gesture');
+            }
+          }
+        }, 500);
         // await get().play();
       }
     },
