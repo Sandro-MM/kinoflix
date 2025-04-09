@@ -28,35 +28,6 @@ const VideoPlayerLiveTV = ({keyItem,
   const [adCompletedByUser, setAdCompletedByUser] = useState(false);
 
 
-interface Channel {
-    id: string;
-    name: {
-      en: string;
-      ru: string;
-    };
-    cover: string;
-    live: boolean;
-    slug: string;
-    stream: string;
-    archiveDays: number;
-    vast: {
-      enabled: boolean;
-      place: string;
-      url: string;
-    };
-  }
-
-  interface Program {
-    title: {
-      lang: string;
-      text: string;
-    };
-    start: string;
-    stop: string;
-    channel: string;
-  }
-
-
 
   useEffect(() => {
     async function fetchVAST() {
@@ -304,7 +275,7 @@ interface Channel {
       isLiveTvControls={true}
       enableControls={enableControls}
       key={keyItem}
-      autoPlay={true}
+      autoPlay={false}
       video={{
         src: stream,
         name: '123',
