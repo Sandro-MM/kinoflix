@@ -15,8 +15,7 @@ import {FullscreenButton} from '@common/player/ui/controls/fullscreen-button';
 import {PipButton} from '@common/player/ui/controls/pip-button';
 import React, {Fragment, ReactNode} from 'react';
 import {useIsMobileMediaQuery} from '@ui/utils/hooks/is-mobile-media-query';
-import {VideoControls} from '@app/live-tv/video-controls';
-import {SkipButton} from '@app/live-tv/skip-button';
+import {SkipButtonMobile} from '@app/live-tv/skip-button-mobile';
 
 interface Props {
   rightActions?: ReactNode;
@@ -60,6 +59,8 @@ export function VideoPlayerControls({
   };
 
   return isMobile ? (
+    isLiveTvControls ?
+      <LiveControlsMobile {...sharedProps}/> :
     <MobileControls {...sharedProps} />
   ) : isLiveTvControls ? (
     <LiveControls {...sharedProps} />
@@ -212,4 +213,70 @@ function LiveControls({
 
     </div>
   );
+}
+
+
+function LiveControlsMobile({
+                        onPointerEnter,
+                        onPointerLeave,
+                        rightActions,
+                        className,
+                        setSelectedVideo,
+                        streamink,
+                        liveControls,
+                      }: ResponsiveControlsProps) {
+  const isFullscreen = usePlayerStore(s => s.isFullscreen);
+  const controlsVisible = usePlayerStore(s => s.controlsVisible);
+  return (
+    <Fragment>
+      <div
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onClick={e => e.stopPropagation()}
+        className={clsx('left-0 right-0 top-0 px-6 pt-6 ', className)}
+      >
+        <div className="flex items-end justify-end">
+          {rightActions}
+
+          <PlaybackOptionsButton color="white" />
+          <PipButton color="white" />
+          <ToggleMuteButton color="white" size="md" />
+        </div>
+      </div>
+      <div
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+        onClick={e => e.stopPropagation()}
+        className={clsx('bottom-0 left-0 right-0 px-12 w-ful relative !z-[99]')}
+      >
+        <div className="flex items-center gap-24">
+         <div className={'flex items-center justify-center absolute bottom-16 w-full '}>
+           <div className={'flex items-center justify-center max-[450px]:hidden'}>
+             <div className={'max-[550px]:hidden'}>
+             <SkipButtonMobile seconds={300} direction={'backward'} />
+             </div>
+             <SkipButtonMobile seconds={60} direction={'backward'} />
+           </div>
+
+           <SkipButtonMobile seconds={30} direction={'backward'} />
+           <PlayButton color="white" />
+           <SkipButtonMobile seconds={30} direction={'forward'} />
+           <div className={'flex items-center justify-center max-[450px]:hidden'}>
+             <SkipButtonMobile seconds={60} direction={'forward'} />
+             <div className={'max-[550px]:hidden'}>
+               <SkipButtonMobile seconds={300} direction={'forward'} />
+             </div>
+           </div>
+
+         </div>
+          <FullscreenButton
+            size="sm"
+            iconSize="lg"
+            color="white"
+            className="absolute right-16 bottom-16"
+          />
+        </div>
+      </div>
+    </Fragment>
+  )
 }

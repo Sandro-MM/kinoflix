@@ -22,7 +22,7 @@ export function SkipButton({ seconds, direction }: SkipButtonProps) {
   };
 
   return (
-    <Button color={'chip'} variant={'flat'} onClick={handleClick} className="px-6 py-2 flex items-center justify-end gap-5">
+    <Button color={'chip'} variant={'flat'} onClick={handleClick} className="md:px-6 py-2 max-md:!bg-transparent max-md:!border-none flex items-center justify-end gap-5">
 
       {direction === 'backward' && <svg
         className={'svg-icon'}

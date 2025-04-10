@@ -12,6 +12,7 @@ import {Button} from '@ui/buttons/button';
 import {ParseCustomTimestamp} from '@app/live-tv/live-tv-time converter';
 import {Channel, ChannelsSelect, Program, ProgramSelectProps} from '@app/live-tv/live-tv';
 import {Seekbar} from '@common/player/ui/controls/seeking/seekbar';
+import {MediaPlayIcon} from '@ui/icons/media/media-play';
 
 
 export interface LiveTVVideoPlayerProps{
@@ -50,60 +51,73 @@ const VideoPlayerLiveTV = ({keyItem,
   const [skipTime, setSkipTime] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [canSkip, setCanSkip] = useState<boolean>(false);
-  const [muted, setMuted] = useState<boolean>(IS_IOS);
+  const [muted, setMuted] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [adCompletedByUser, setAdCompletedByUser] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
+
 
 
 
   useEffect(() => {
-    async function fetchVAST() {
-      if (!vastUrl) return;
-      const vastClient = new VASTClient();
-      try {
-        // 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml'
-        const response = await vastClient.get(vastUrl);
-        if (response) {
-          console.log(response);
-          const validAd = response.ads.find(
-            (ad: any) => ad?.creatives?.length > 0,
-          );
-          if (!validAd) return;
-          console.log(validAd, 'validAdvalidAd');
-          const creative: any = validAd.creatives.find(
-            (c: any) => c?.mediaFiles,
-          );
-          console.log(creative, 'creativecreativecreative');
-          const mediaFileUrl = creative?.mediaFiles?.find(
-            (mf: any) => mf.fileURL,
-          )?.fileURL;
-          const mediaFileSkipDelay = creative?.skipDelay;
-          console.log(mediaFileSkipDelay);
-          if (mediaFileSkipDelay) {
-            setSkipTime(mediaFileSkipDelay);
-          } else {
-            setSkipTime(15);
-          }
+    setLoading(true);
+    setAdMediaUrl(null);
+    setVastTracker(null);
+    setCanSkip(false);
+    setIsPaused(true);
+    setAdCompletedByUser(false);
+    fetchVAST();
+  }, [stream]);
 
-          console.log(mediaFileSkipDelay, 'mediaFileSkipDelay');
-          console.log(mediaFileUrl, 'mediaFileUrlmediaFileUrl');
-          if (mediaFileUrl) {
-            console.log(mediaFileUrl, 'mediaFileUrlmediaFileUrl');
-            setAdMediaUrl(mediaFileUrl);
-            const tracker = new VASTTracker(vastClient, validAd, creative);
-            setVastTracker(tracker);
-            tracker.trackImpression();
-          } else {
-            setAdMediaUrl(null);
-          }
+  async function fetchVAST() {
+    setCanSkip(false)
+    if (!vastUrl) return;
+    const vastClient = new VASTClient();
+    try {
+      // 'https://statics.dmcdn.net/h/html/vast/simple-inline.xml'
+      const response = await vastClient.get(vastUrl);
+      if (response) {
+        console.log(response);
+        const validAd = response.ads.find(
+          (ad: any) => ad?.creatives?.length > 0,
+        );
+        if (!validAd) return;
+        console.log(validAd, 'validAdvalidAd');
+        const creative: any = validAd.creatives.find(
+          (c: any) => c?.mediaFiles,
+        );
+        console.log(creative, 'creativecreativecreative');
+        const mediaFileUrl = creative?.mediaFiles?.find(
+          (mf: any) => mf.fileURL,
+        )?.fileURL;
+        const mediaFileSkipDelay = creative?.skipDelay;
+        console.log(mediaFileSkipDelay);
+        if (mediaFileSkipDelay) {
+          setSkipTime(mediaFileSkipDelay);
+        } else {
+          setSkipTime(15);
         }
-      } catch (error) {
-        console.error('Error fetching VAST:', error);
+
+        console.log(mediaFileSkipDelay, 'mediaFileSkipDelay');
+        console.log(mediaFileUrl, 'mediaFileUrlmediaFileUrl');
+        if (mediaFileUrl) {
+          console.log(mediaFileUrl, 'mediaFileUrlmediaFileUrl');
+          setAdMediaUrl(mediaFileUrl);
+          const tracker = new VASTTracker(vastClient, validAd, creative);
+          setVastTracker(tracker);
+          tracker.trackImpression();
+        } else {
+          setAdMediaUrl(null);
+        }
       }
+    } catch (error) {
+      console.error('Error fetching VAST:', error);
+    } finally {
+      setLoading(false)
     }
 
-    fetchVAST();
-  }, [vastUrl]);
+  }
 
   useEffect(() => {
     if (!videoRef.current || !vastTracker) return;
@@ -211,19 +225,43 @@ const VideoPlayerLiveTV = ({keyItem,
   }, []);
 
 
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (video) {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    }
+  };
 
-  return (
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const updatePausedState = () => setIsPaused(video.paused);
+
+    video.addEventListener('play', updatePausedState);
+    video.addEventListener('pause', updatePausedState);
+
+    return () => {
+      video.removeEventListener('play', updatePausedState);
+      video.removeEventListener('pause', updatePausedState);
+    };
+  }, [adMediaUrl]);
+
+ if(!loading) return (
 <>
     {adMediaUrl ? (
         <div className="relative flex h-full w-full items-center justify-center bg-twitter">
           <div className="relative flex h-full w-full items-center justify-center">
             <video
+              key={`ad-${stream}`}
               muted={muted}
-              autoPlay={true}
               playsInline
               ref={videoRef}
               controls={false}
-
               className="object-contain"
               style={{
                 width: '100%',
@@ -234,7 +272,24 @@ const VideoPlayerLiveTV = ({keyItem,
             >
               <source src={adMediaUrl} type="video/mp4" />
             </video>
+
+
+            {adMediaUrl && isPaused && (
+              <button
+                onClick={togglePlayback}
+                className="absolute z-10 size-50"
+                style={{ border: 'none' }}
+              >
+                <MediaPlayIcon className="size-50" />
+              </button>
+            )}
+
+
             <div className={'absolute bottom-16 right-16 flex items-center justify-center gap-12'}>
+
+
+
+
               <button
                 onClick={() => setMuted(prev => !prev)}
                 className={
@@ -266,7 +321,7 @@ const VideoPlayerLiveTV = ({keyItem,
                 )}
               </button>
 
-              {timeLeft !== null && (
+              {timeLeft && !isPaused && (
                 <button
                   disabled={!canSkip}
                   onClick={handleSkip}
@@ -370,6 +425,7 @@ export const LiveTVControlsRight: React.FC<ProgramSelectProps> = ({
                                       selectedProgram,
                                       setSelectedProgram,
                                     }) => {
+
   return (
     <>
       {programs &&
