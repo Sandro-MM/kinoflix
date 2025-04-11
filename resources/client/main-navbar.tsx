@@ -14,22 +14,23 @@ interface Props {
 export function MainNavbar({position = 'relative',isTransparent = false}: Props) {
   return (
     <>
-      <Navbar
-      isTransparent={isTransparent}
-      size="md"
-      menuPosition="primary"
-      className={'z-40 w-full flex-shrink-0 fixed top-0 pl-[80px]'}
-      border="border-none"
-      alwaysDarkMode
-    >
+    {/*  <Navbar*/}
+    {/*  isTransparent={isTransparent}*/}
+    {/*  size="md"*/}
+    {/*  menuPosition="primary"*/}
+    {/*  className={'z-40 w-full flex-shrink-0 fixed top-0 pl-[80px]'}*/}
+    {/*  border="border-none"*/}
+    {/*  alwaysDarkMode*/}
+    {/*>*/}
 
-      <Tooltip label={<Trans message="Search" />}>
-        <IconButton elementType={Link} to="/search" className="md:hidden absolute left-[30px]">
-          <SearchIcon />
-        </IconButton>
-      </Tooltip>
-      <SearchAutocomplete className="max-md:hidden ml-auto w-full" />
-    </Navbar>
+    {/*  <Tooltip label={<Trans message="Search" />}>*/}
+    {/*    <IconButton elementType={Link} to="/search" className="md:hidden absolute left-[30px]">*/}
+    {/*      <SearchIcon />*/}
+    {/*    </IconButton>*/}
+    {/*  </Tooltip>*/}
+    {/*  <SearchAutocomplete className="max-md:hidden ml-auto w-full" />*/}
+    {/*</Navbar>*/}
+      compatibility nav
     </>
   );
 }
