@@ -85,7 +85,8 @@ export function ChannelLayout(props: ChannelContentProps) {
       return <ChannelContentCarousel {...props} variant="landscape" />;
     case 'slider':
       return (
-        <ChannelContentSlider {...(props as ChannelContentProps<Title>)} />
+        <div>compartibility test</div>
+        // <ChannelContentSlider {...(props as ChannelContentProps<Title>)} />
       );
     case 'news':
       return (
