@@ -1,5 +1,5 @@
 import React, {forwardRef, Fragment, ReactElement, ReactNode} from 'react';
-import {NavLink, useLocation} from 'react-router';
+import {NavLink} from 'react-router';
 import clsx from 'clsx';
 import {Orientation} from '@ui/forms/orientation';
 import {useCustomMenu} from './use-custom-menu';
@@ -10,7 +10,6 @@ import {createSvgIconFromTree} from '@ui/icons/create-svg-icon';
 import {Tooltip} from '@ui/tooltip/tooltip';
 
 type MatchDescendants = undefined | boolean | ((to: string) => boolean);
-
 
 export interface CustomMenuProps {
   className?: string;
@@ -33,10 +32,6 @@ export interface CustomMenuProps {
   onlyShowIcons?: boolean;
   unstyled?: boolean;
 }
-
-
-
-
 export function CustomMenu({
   className,
   iconClassName,
@@ -51,8 +46,6 @@ export function CustomMenu({
   unstyled = false,
 }: CustomMenuProps) {
   const menu = useCustomMenu(menuOrPosition);
-
-
   if (!menu) return null;
 
   return (
@@ -117,9 +110,7 @@ export const CustomMenuItem = forwardRef<HTMLAnchorElement, MenuItemProps>(
     ref,
   ) => {
     const label = <Trans message={item.label} />;
-
     const IconCmp = item.icon && createSvgIconFromTree(item.icon);
-
     let icon = IconCmp ? (
       <IconCmp size={iconSize} className={iconClassName} />
     ) : null;
@@ -140,12 +131,6 @@ export const CustomMenuItem = forwardRef<HTMLAnchorElement, MenuItemProps>(
     const baseClassName =
       !unstyled && 'whitespace-nowrap flex items-center justify-start gap-10';
     const focusClassNames = !unstyled && 'outline-none focus-visible:ring-2';
-
-    const location = useLocation();
-
-    const getTextClass = (action: any) => {
-      return action === location.pathname ? '#fcba03' : '';
-    };
 
     if (item.type === 'link') {
       return (
@@ -176,19 +161,15 @@ export const CustomMenuItem = forwardRef<HTMLAnchorElement, MenuItemProps>(
         }
         className={props =>
           clsx(baseClassName, className?.(props), focusClassNames, position)
-
         }
-        style={{color:getTextClass(item.action)}}
         to={item.action}
         target={item.target}
         data-menu-item-id={item.id}
         ref={ref}
         {...linkProps}
       >
-
-          {extraContent}
-          {content}
-
+        {extraContent}
+        {content}
       </NavLink>
     );
   },

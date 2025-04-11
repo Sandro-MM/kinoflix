@@ -113,7 +113,7 @@ export function Navbar(props: NavbarProps) {
         {toggleButton}
         {children}
         <MobileMenu position={menuPosition} />
-
+        <DesktopMenu position={menuPosition} />
         <div className="ml-auto flex items-center gap-4 md:gap-14">
           {rightChildren}
           {showNotifButton && <NotificationDialogTrigger />}
@@ -148,7 +148,6 @@ function DesktopMenu({position}: DesktopMenuProps) {
         )
       }
       menu={position}
-      orientation={'vertical'}
     />
   );
 }

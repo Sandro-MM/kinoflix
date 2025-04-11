@@ -12,11 +12,10 @@ interface Props {
 }
 export function MainNavbar({position = 'relative'}: Props) {
   return (
-    <>
-      <Navbar
+    <Navbar
       size="md"
       menuPosition="primary"
-      className={clsx(position, 'z-40 w-full flex-shrink-0 sticky top-0')}
+      className={clsx(position, 'z-40 w-full flex-shrink-0')}
       border="border-none"
       alwaysDarkMode
     >
@@ -27,6 +26,5 @@ export function MainNavbar({position = 'relative'}: Props) {
       </Tooltip>
       <SearchAutocomplete className="max-md:hidden" />
     </Navbar>
-    </>
   );
 }
